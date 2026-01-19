@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     // Exchange code for tokens
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`;
     console.log('🔗 Redirect URI:', redirectUri);
-    
+
     const oauth2Client = new google.auth.OAuth2(
       process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
       process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
@@ -70,15 +70,15 @@ export async function GET(request: NextRequest) {
       console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (SUCCESS) ==========\n');
 
       // Redirect to dashboard
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard`, request.url));
     }
 
     console.error('❌ Backend login failed:', result.message);
     console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (FAILED) ==========\n');
-    return NextResponse.redirect(new URL('/login?error=backend_failed', request.url));
+    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/login?error=backend_failed`, request.url));
   } catch (error: any) {
     console.error('❌ Callback error:', error);
     console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (ERROR) ==========\n');
-    return NextResponse.redirect(new URL('/login?error=callback_error', request.url));
+    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/login?error=callback_error`, request.url));
   }
 }

@@ -24,15 +24,15 @@ export default async function Home({
       nip: nip as string,
       key: key as string,
     });
-    redirect(`/login?${params.toString()}`);
+    redirect(`${process.env.NEXT_PUBLIC_APP_URL}/login?${params.toString()}`);
   }
 
   // Normal flow: check authentication
   const authenticated = await isAuthenticated();
 
   if (authenticated) {
-    redirect('/dashboard');
+    redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard`);
   } else {
-    redirect('/login');
+    redirect(`${process.env.NEXT_PUBLIC_APP_URL}/login`);
   }
 }

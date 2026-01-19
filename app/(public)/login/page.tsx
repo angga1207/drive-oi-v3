@@ -18,7 +18,7 @@ import { getAppVersion } from '@/lib/version';
 function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/dashboard';
+  const redirectTo = searchParams.get('redirect') || `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`;
   const errorParam = searchParams.get('error');
 
   const usernameRef = useRef<HTMLInputElement>(null);
