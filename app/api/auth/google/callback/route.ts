@@ -25,12 +25,16 @@ export async function GET(request: NextRequest) {
   try {
     console.log('\n🔐 ========== GOOGLE OAUTH CALLBACK ==========');
     console.log('📥 Received authorization code');
+    console.log('🌐 NEXT_PUBLIC_APP_URL:', process.env.NEXT_PUBLIC_APP_URL);
 
     // Exchange code for tokens
+    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`;
+    console.log('🔗 Redirect URI:', redirectUri);
+    
     const oauth2Client = new google.auth.OAuth2(
       process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
       process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`
+      redirectUri
     );
 
     const { tokens } = await oauth2Client.getToken(code);

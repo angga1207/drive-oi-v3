@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
     try {
         console.log('\n🔗 ========== GOOGLE INTEGRATION CALLBACK ==========');
         console.log('📥 Received authorization code');
+        console.log('🌐 NEXT_PUBLIC_APP_URL:', process.env.NEXT_PUBLIC_APP_URL);
 
         // Verify user is authenticated
         const token = await getToken();
@@ -42,10 +43,13 @@ export async function GET(request: NextRequest) {
         }
 
         // Exchange code for tokens
+        const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/integrate/callback`;
+        console.log('🔗 Integration Callback Redirect URI:', redirectUri);
+        
         const oauth2Client = new google.auth.OAuth2(
             process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
             process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
-            `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/integrate/callback`
+            redirectUri
         );
 
         const { tokens } = await oauth2Client.getToken(code);
