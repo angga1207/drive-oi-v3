@@ -18,9 +18,9 @@ export async function GET() {
             authenticated: true,
             user: {
                 id: user.id,
-                fullname: user.fullname,
-                firstname: user.firstname,
-                lastname: user.lastname,
+                fullname: user.name.fullname,
+                firstname: user.name.firstname,
+                lastname: user.name.lastname,
                 email: user.email,
                 photo: user.photo,
             },

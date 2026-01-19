@@ -323,7 +323,7 @@ export async function getMeService(): Promise<ApiResponse<User>> {
         }
 
         const response = await apiClient.get<{ user: User }>(
-            API_ENDPOINTS.AUTH.ME,
+            API_ENDPOINTS.AUTH.GET_PROFILE,
             { token }
         );
 

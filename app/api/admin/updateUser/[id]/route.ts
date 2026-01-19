@@ -9,7 +9,7 @@ import { API_CONFIG } from '@/lib/config';
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const token = await getToken();
@@ -22,7 +22,7 @@ export async function POST(
         }
 
         const body = await request.json();
-        const userId = params.id;
+        const { id: userId } = await params;
 
         const response = await fetch(`${API_CONFIG.BASE_URL}/updateUser/${userId ?? body.id}`, {
             method: 'POST',

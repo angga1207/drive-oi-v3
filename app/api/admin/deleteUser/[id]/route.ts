@@ -8,7 +8,7 @@ import { API_CONFIG } from '@/lib/config';
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const token = await getToken();
@@ -20,7 +20,7 @@ export async function DELETE(
       );
     }
 
-    const userId = params.id;
+    const { id: userId } = await params;
 
     const response = await fetch(`${API_CONFIG.BASE_URL}/deleteUser/${userId}`, {
       method: 'DELETE',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
@@ -15,7 +15,7 @@ import { HiShieldCheck } from 'react-icons/hi2';
 import { AiOutlineExclamationCircle } from 'react-icons/ai';
 import { getAppVersion } from '@/lib/version';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/dashboard';
@@ -477,5 +477,20 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/90 via-primary/80 to-blue-600/90">
+        <div className="text-white text-center">
+          <RiRefreshLine className="w-16 h-16 animate-spin mx-auto mb-4" />
+          <p className="text-xl font-semibold">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   );
 }

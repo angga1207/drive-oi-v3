@@ -91,8 +91,8 @@ export async function registerAction(
     const result = await registerService(data);
 
     if (result.success && result.data) {
-        // Set session dengan token dan user data
-        await setSession(result.data.token, result.data.user);
+        // result.data adalah AuthResponse yang memiliki structure { status, message, data: { user, token } }
+        await setSession(result.data.data.token, result.data.data.user);
 
         return {
             success: true,
