@@ -4,6 +4,7 @@ import { FaFolderOpen } from 'react-icons/fa';
 import { HiOutlineFolder } from 'react-icons/hi';
 import FilesPageClient from '@/components/FilesPageClient';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 interface FilesPageProps {
     searchParams: Promise<{ _p?: string }>;
@@ -38,10 +39,24 @@ export default async function FilesPage({ searchParams }: FilesPageProps) {
 
     // Fetch path data for breadcrumb
     const pathResponse = await getPathService(slug);
+    
+    // Check if token is invalid/expired (Unauthenticated error)
+    if ((pathResponse as any).isUnauthenticated) {
+        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
+        redirect('/api/auto-logout?error=session_expired&redirect=/files');
+    }
+    
     const pathData = pathResponse.success ? pathResponse.data : { paths: [], current: '' };
 
     // Fetch items (files and folders)
     const itemsResponse = await getItemsService(slug);
+    
+    // Check if token is invalid/expired (Unauthenticated error)
+    if ((itemsResponse as any).isUnauthenticated) {
+        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
+        redirect('/api/auto-logout?error=session_expired&redirect=/files');
+    }
+    
     const items = itemsResponse.success ? itemsResponse.data : [];
 
     return (

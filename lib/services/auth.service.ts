@@ -21,7 +21,7 @@ import {
 export async function getItemsService(slug?: string): Promise<ApiResponse<any>> {
     try {
         const token = await getToken();
-        
+
         if (!token) {
             return {
                 success: false,
@@ -29,7 +29,7 @@ export async function getItemsService(slug?: string): Promise<ApiResponse<any>> 
             };
         }
 
-        const url = slug 
+        const url = slug
             ? `${API_ENDPOINTS.DRIVE.GET_ITEMS}?slug=${slug}`
             : API_ENDPOINTS.DRIVE.GET_ITEMS;
 
@@ -56,6 +56,16 @@ export async function getItemsService(slug?: string): Promise<ApiResponse<any>> 
         };
     } catch (error: any) {
         console.error('❌ Get items error:', error.message);
+
+        // Check if error is Unauthenticated (token expired/invalid)
+        if (error.status === 401 || error.isUnauthenticated || error.message === 'Unauthenticated.' || error.message === 'Unauthenticated') {
+            return {
+                success: false,
+                message: 'Unauthenticated.',
+                isUnauthenticated: true,
+            };
+        }
+
         return {
             success: false,
             message: error.message || 'Failed to get items',
@@ -69,7 +79,7 @@ export async function getItemsService(slug?: string): Promise<ApiResponse<any>> 
 export async function getPathService(slug?: string): Promise<ApiResponse<any>> {
     try {
         const token = await getToken();
-        
+
         if (!token) {
             return {
                 success: false,
@@ -77,7 +87,7 @@ export async function getPathService(slug?: string): Promise<ApiResponse<any>> {
             };
         }
 
-        const url = slug 
+        const url = slug
             ? `${API_ENDPOINTS.DRIVE.GET_PATH}?slug=${slug}`
             : API_ENDPOINTS.DRIVE.GET_PATH;
 
@@ -104,6 +114,16 @@ export async function getPathService(slug?: string): Promise<ApiResponse<any>> {
         };
     } catch (error: any) {
         console.error('❌ Get path error:', error.message);
+
+        // Check if error is Unauthenticated (token expired/invalid)
+        if (error.status === 401 || error.isUnauthenticated || error.message === 'Unauthenticated.' || error.message === 'Unauthenticated') {
+            return {
+                success: false,
+                message: 'Unauthenticated.',
+                isUnauthenticated: true,
+            };
+        }
+
         return {
             success: false,
             message: error.message || 'Failed to get path',
@@ -117,7 +137,7 @@ export async function getPathService(slug?: string): Promise<ApiResponse<any>> {
 export async function getProfileService(): Promise<ApiResponse<any>> {
     try {
         const token = await getToken();
-        
+
         if (!token) {
             return {
                 success: false,
@@ -148,6 +168,16 @@ export async function getProfileService(): Promise<ApiResponse<any>> {
         };
     } catch (error: any) {
         console.error('❌ Get profile error:', error.message);
+
+        // Check if error is Unauthenticated (token expired/invalid)
+        if (error.status === 401 || error.isUnauthenticated || error.message === 'Unauthenticated.' || error.message === 'Unauthenticated') {
+            return {
+                success: false,
+                message: 'Unauthenticated.',
+                isUnauthenticated: true,
+            };
+        }
+
         return {
             success: false,
             message: error.message || 'Failed to get profile',
@@ -208,56 +238,56 @@ export async function loginService(
  * Google Login - Send Google user data to Laravel backend
  */
 export async function googleLoginService(googleData: {
-  name: string;
-  email: string;
-  image: string;
+    name: string;
+    email: string;
+    image: string;
 }): Promise<ApiResponse<{ user: User; token: string }>> {
-  try {
-    console.log('\n🌐 ========== GOOGLE LOGIN SERVICE START ==========');
-    console.log('🎯 API Endpoint:', API_ENDPOINTS.AUTH.LOGINGOOGLE);
-    console.log('📦 Request body:', { 
-      name: googleData.name, 
-      email: googleData.email,
-      image: googleData.image ? 'Present' : 'Missing'
-    });
-    console.log('⏳ Calling Laravel backend API...');
-    
-    const response = await apiClient.post<AuthResponse>(
-      API_ENDPOINTS.AUTH.LOGINGOOGLE,
-      googleData
-    );
-    
-    console.log('✅ API Response received!');
-    console.log('📊 Response status:', response.status);
-    console.log('💬 Response message:', response.message);
-    console.log('👤 User data:', response.data?.user ? 'Present' : 'Missing');
-    console.log('🔑 Token:', response.data?.token ? response.data.token.substring(0, 20) + '...' : 'Missing');
-    console.log('🌐 ========== GOOGLE LOGIN SERVICE END ==========\n');
+    try {
+        console.log('\n🌐 ========== GOOGLE LOGIN SERVICE START ==========');
+        console.log('🎯 API Endpoint:', API_ENDPOINTS.AUTH.LOGINGOOGLE);
+        console.log('📦 Request body:', {
+            name: googleData.name,
+            email: googleData.email,
+            image: googleData.image ? 'Present' : 'Missing'
+        });
+        console.log('⏳ Calling Laravel backend API...');
 
-    // Check if login successful
-    if (response.status === 'success' && response.data) {
-      return {
-        success: true,
-        data: {
-          user: response.data.user,
-          token: response.data.token,
-        },
-        message: response.message,
-      };
+        const response = await apiClient.post<AuthResponse>(
+            API_ENDPOINTS.AUTH.LOGINGOOGLE,
+            googleData
+        );
+
+        console.log('✅ API Response received!');
+        console.log('📊 Response status:', response.status);
+        console.log('💬 Response message:', response.message);
+        console.log('👤 User data:', response.data?.user ? 'Present' : 'Missing');
+        console.log('🔑 Token:', response.data?.token ? response.data.token.substring(0, 20) + '...' : 'Missing');
+        console.log('🌐 ========== GOOGLE LOGIN SERVICE END ==========\n');
+
+        // Check if login successful
+        if (response.status === 'success' && response.data) {
+            return {
+                success: true,
+                data: {
+                    user: response.data.user,
+                    token: response.data.token,
+                },
+                message: response.message,
+            };
+        }
+
+        return {
+            success: false,
+            message: response.message || 'Google login failed',
+        };
+    } catch (error: any) {
+        console.error('❌ Google login service error:', error);
+        return {
+            success: false,
+            message: error.message || 'Google login failed',
+            errors: error.errors || {},
+        };
     }
-
-    return {
-      success: false,
-      message: response.message || 'Google login failed',
-    };
-  } catch (error: any) {
-    console.error('❌ Google login service error:', error);
-    return {
-      success: false,
-      message: error.message || 'Google login failed',
-      errors: error.errors || {},
-    };
-  }
 }
 
 /**
@@ -367,6 +397,58 @@ export async function refreshTokenService(): Promise<ApiResponse<AuthResponse>> 
         return {
             success: false,
             message: error.message || 'Token refresh failed',
+        };
+    }
+}
+/**
+ * Get latest files
+ */
+export async function getLatestFilesService(): Promise<ApiResponse<any>> {
+    try {
+        const token = await getToken();
+
+        if (!token) {
+            return {
+                success: false,
+                message: 'No authentication token found',
+            };
+        }
+
+        const response = await apiClient.get<any>(
+            API_ENDPOINTS.DRIVE.LATEST_FILES,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return {
+                success: true,
+                data: response.data,
+                message: response.message,
+            };
+        }
+
+        return {
+            success: false,
+            message: 'Failed to fetch latest files',
+        };
+    } catch (error: any) {
+        // Check if error is Unauthenticated
+        if (error.status === 401 || error.isUnauthenticated || error.message === 'Unauthenticated.' || error.message === 'Unauthenticated') {
+            return {
+                success: false,
+                message: 'Unauthenticated.',
+                isUnauthenticated: true,
+            };
+        }
+
+        console.error('getLatestFilesService error:', error);
+        return {
+            success: false,
+            message: error.message || 'Failed to fetch latest files',
         };
     }
 }

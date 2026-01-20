@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSession, getCurrentUser } from '@/lib/session';
+import { getSession, getCurrentUser, clearSession } from '@/lib/session';
 
 export async function GET() {
     try {
@@ -33,5 +33,25 @@ export async function GET() {
             user: null,
             token: null,
         });
+    }
+}
+
+/**
+ * DELETE - Clear session (logout)
+ * This endpoint is used by client-side auto-logout
+ */
+export async function DELETE() {
+    try {
+        await clearSession();
+        return NextResponse.json({
+            success: true,
+            message: 'Session cleared',
+        });
+    } catch (error) {
+        console.error('Error clearing session:', error);
+        return NextResponse.json({
+            success: false,
+            message: 'Failed to clear session',
+        }, { status: 500 });
     }
 }

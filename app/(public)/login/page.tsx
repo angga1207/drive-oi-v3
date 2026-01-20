@@ -24,7 +24,23 @@ function LoginPageContent() {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const [error, setError] = useState(errorParam || '');
+  // Handle error messages
+  const getErrorMessage = (errorCode: string | null) => {
+    if (!errorCode) return '';
+    
+    const errorMessages: Record<string, string> = {
+      'session_expired': 'Sesi Anda telah berakhir atau token tidak valid. Silakan login kembali.',
+      'access_denied': 'Akses ditolak oleh Google',
+      'no_code': 'Kode otorisasi tidak ditemukan',
+      'oauth_failed': 'Login dengan Google gagal',
+      'backend_failed': 'Login ke server gagal',
+      'callback_error': 'Terjadi kesalahan saat callback',
+    };
+    
+    return errorMessages[errorCode] || errorCode;
+  };
+
+  const [error, setError] = useState(getErrorMessage(errorParam));
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);

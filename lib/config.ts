@@ -38,6 +38,7 @@ export const API_ENDPOINTS = {
         GET_PATH: '/getPath',
         GET_ITEMS: '/getItems',
         GET_FAVORITE_ITEMS: '/getFavoriteItems',
+        LATEST_FILES: '/latestFiles',
         CREATE_FOLDER: '/drive/folder',
         UPLOAD: '/drive/upload',
         DELETE: '/drive',

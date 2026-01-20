@@ -4,6 +4,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/session';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 interface SharedPageProps {
     searchParams: Promise<{ _p?: string }>;
@@ -53,6 +54,15 @@ async function getSharedPath(slug?: string) {
 
         if (!response.ok) {
             console.error('Failed to fetch path:', response.status);
+            
+            // Check if Unauthenticated error
+            if (response.status === 401) {
+                const data = await response.json();
+                if (data.message === 'Unauthenticated.' || data.message === 'Unauthenticated') {
+                    return { paths: [], current: null, isUnauthenticated: true };
+                }
+            }
+            
             return { paths: [], current: null };
         }
 
@@ -93,6 +103,15 @@ async function getSharedFolders(slug?: string) {
 
         if (!response.ok) {
             console.error('Failed to fetch shared folders:', response.status);
+            
+            // Check if Unauthenticated error
+            if (response.status === 401) {
+                const data = await response.json();
+                if (data.message === 'Unauthenticated.' || data.message === 'Unauthenticated') {
+                    return { items: [], isUnauthenticated: true };
+                }
+            }
+            
             return { items: [] };
         }
 
@@ -109,14 +128,26 @@ export default async function SharedPage({ searchParams }: SharedPageProps) {
     const params = await searchParams;
     const slug = params._p;
 
+    // Get path data for breadcrumb
+    const pathData = await getSharedPath(slug);
+    
+    // Check if Unauthenticated
+    if ((pathData as any).isUnauthenticated) {
+        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
+        redirect('/api/auto-logout?error=session_expired&redirect=/shared');
+    }
+
+    // Get shared folders/items
+    const foldersData = await getSharedFolders(slug);
+    
+    // Check if Unauthenticated
+    if ((foldersData as any).isUnauthenticated) {
+        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
+        redirect('/api/auto-logout?error=session_expired&redirect=/shared');
+    }
+
     // Get current user
     const currentUser = await getCurrentUser();
-
-    // Fetch path data for breadcrumb
-    const pathData = await getSharedPath(slug);
-
-    // Fetch shared folders
-    const { items } = await getSharedFolders(slug);
 
     return (
         <div className="space-y-6 select-none">
@@ -139,7 +170,7 @@ export default async function SharedPage({ searchParams }: SharedPageProps) {
             )}
 
             {/* Items List with Drag & Drop */}
-            <SharedPageClient items={items} currentPath={slug} currentUserId={currentUser?.id} />
+            <SharedPageClient items={foldersData.items} currentPath={slug} currentUserId={currentUser?.id} />
         </div>
     );
 }

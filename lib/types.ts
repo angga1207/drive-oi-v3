@@ -56,6 +56,7 @@ export interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   errors?: Record<string, string[]>;
+  isUnauthenticated?: boolean;
 }
 
 // Types untuk File/Folder
@@ -199,4 +200,40 @@ export interface UpdateUserData {
   lastname: string;
   email: string;
   capacity: number;
+}
+// Types untuk Latest File
+export interface LatestFile {
+  id: number;
+  parent_id: number;
+  parent_slug: string;
+  parent_name: string;
+  name: string;
+  type: 'file' | 'folder';
+  extension: string;
+  mime: string;
+  full_mime: string;
+  size: string;
+  size_bytes: number;
+  slug: string;
+  favorite: boolean;
+  path: string;
+  sv_in: number;
+  publicity: {
+    status: 'private' | 'public';
+    expired_at: string | null;
+    forever: boolean;
+    editable: boolean;
+  };
+  author: {
+    id: number;
+    fullname: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    photo: string;
+  };
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  childs: number;
 }

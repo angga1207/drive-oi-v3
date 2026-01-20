@@ -98,6 +98,18 @@ class ApiClient {
 
             if (!response.ok) {
                 // console.error('❌ Response not OK:', response.status);
+                
+                // Check if error is "Unauthenticated" - token invalid/expired
+                if (response.status === 401 || data.message === 'Unauthenticated.' || data.message === 'Unauthenticated') {
+                    console.error('❌ Token invalid or expired - Unauthenticated');
+                    throw {
+                        status: 401,
+                        message: 'Unauthenticated.',
+                        errors: data.errors || {},
+                        isUnauthenticated: true, // Flag for client to handle logout
+                    };
+                }
+                
                 throw {
                     status: response.status,
                     message: data.message || 'An error occurred',
