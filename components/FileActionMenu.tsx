@@ -133,7 +133,13 @@ export default function FileActionMenu({
             !isFavorite && {
                 label: item.author.fullname,
                 icon: <FaUser className="w-4 h-4" />,
-                image: <img src={item.author.photo} alt={item.author.fullname} className="w-4 h-4 rounded-full" />,
+                image: <img
+                    src={item.author.photo}
+                    alt={item.author.fullname}
+                    onError={(e) => {
+                        e.currentTarget.src = '/logo-oi.webp';
+                    }}
+                    className="w-4 h-4 rounded-full" />,
                 onClick: () => { },
                 disabled: true,
                 className: 'text-gray-500 cursor-default',
@@ -176,7 +182,13 @@ export default function FileActionMenu({
             !isFavorite && {
                 label: item.author.fullname,
                 icon: <FaUser className="w-4 h-4" />,
-                image: <img src={item.author.photo} alt={item.author.fullname} className="w-4 h-4 rounded-full" />,
+                image: <img
+                    src={item.author.photo}
+                    onError={(e) => {
+                        e.currentTarget.src = '/logo-oi.webp';
+                    }}
+                    alt={item.author.fullname}
+                    className="w-4 h-4 rounded-full" />,
                 onClick: () => { },
                 disabled: true,
                 className: 'text-gray-500 cursor-default',
