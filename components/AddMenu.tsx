@@ -6,12 +6,15 @@ import { FaFolderOpen } from 'react-icons/fa';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { useUpload } from '@/contexts/UploadContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AddMenuProps {
     currentPath?: string;
+    isMobile?: boolean;
 }
 
-export default function AddMenu({ currentPath }: AddMenuProps) {
+export default function AddMenu({ currentPath, isMobile = false }: AddMenuProps) {
+    const t = useLanguage().t;
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -36,17 +39,17 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
         // Only enable in /files and /shared paths
         const isFilesPath = pathname.startsWith('/files');
         const isSharedPath = pathname.startsWith('/shared');
-        
+
         // Disable if not in /files or /shared
         if (!isFilesPath && !isSharedPath) {
             return true;
         }
-        
+
         // Disable in /shared root (no _p parameter)
         if (isSharedPath && !searchParams.get('_p')) {
             return true;
         }
-        
+
         return false;
     };
 
@@ -125,7 +128,7 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
         const files = e.target.files;
         if (files && files.length > 0) {
             const filesArray = Array.from(files);
-            
+
             // Validate file types
             const blockedExtensions = ['.php', '.js', '.exe', '.bat', '.sh', '.cmd', '.com', '.pif', '.scr', '.vbs', '.jar'];
             const invalidFiles = filesArray.filter(file => {
@@ -163,7 +166,7 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
             }
             await addFilesAndUpload(filesArray, slug);
         }
-        
+
         // Reset input
         if (e.target) {
             e.target.value = '';
@@ -174,7 +177,7 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
         const files = e.target.files;
         if (files && files.length > 0) {
             const filesArray = Array.from(files);
-            
+
             // Get folder name from first file's path
             // webkitRelativePath format: "folderName/file.txt"
             const firstFile = filesArray[0];
@@ -218,7 +221,7 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
             }
             await addFolderAndUpload(filesArray, folderName, parentSlug);
         }
-        
+
         // Reset input
         if (e.target) {
             e.target.value = '';
@@ -232,15 +235,17 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
                 <button
                     onClick={() => !isAddMenuDisabled() && setIsMenuOpen(!isMenuOpen)}
                     disabled={isAddMenuDisabled()}
-                    className={`w-full flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-xl shadow-lg transition-all duration-200 ${
-                        isAddMenuDisabled()
+                    className={`flex items-center justify-center gap-2 font-semibold rounded-xl shadow-lg transition-all duration-300 ${isMobile
+                        ? 'w-14 h-14 rounded-full'
+                        : 'w-full px-6 py-3'
+                        } ${isAddMenuDisabled()
                             ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-[#003a69] to-[#005a9c] hover:from-[#002347] hover:to-[#003a69] text-white transform hover:scale-105'
-                    }`}
+                            : 'bg-gradient-to-r from-[#003a69] to-[#005a9c] hover:from-[#002347] hover:to-[#003a69] text-white transform hover:scale-110 active:scale-95'
+                        }`}
                     title={isAddMenuDisabled() ? 'Tidak bisa menambah file di halaman root. Silakan masuk ke dalam folder terlebih dahulu.' : 'Tambah file atau folder'}
                 >
-                    <HiPlus className="w-5 h-5" />
-                    <span>Tambah</span>
+                    <HiPlus className={`${isMobile ? 'w-6 h-6' : 'w-5 h-5'}`} />
+                    {!isMobile && <span>{t.common.add}</span>}
                 </button>
 
                 {/* Dropdown Menu */}
@@ -250,7 +255,7 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
                             className="fixed inset-0 z-40"
                             onClick={() => setIsMenuOpen(false)}
                         />
-                        <div className="absolute left-0 mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                        <div className={`absolute ${isMobile ? 'bottom-16 right-0' : 'left-0 mt-2'} ${isMobile ? 'w-64' : 'w-full'} bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden`}>
                             <button
                                 onClick={() => {
                                     setIsCreateFolderModalOpen(true);
@@ -260,8 +265,8 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
                             >
                                 <HiFolder className="w-5 h-5 text-[#ebbd18]" />
                                 <div>
-                                    <p className="font-semibold text-gray-900 dark:text-white">Folder Baru</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Buat folder kosong</p>
+                                    <p className="font-semibold text-gray-900 dark:text-white">{t.common.newFolder}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t.common.newFolderDesc}</p>
                                 </div>
                             </button>
 
@@ -273,8 +278,8 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
                             >
                                 <HiUpload className="w-5 h-5 text-[#003a69] dark:text-[#ebbd18]" />
                                 <div>
-                                    <p className="font-semibold text-gray-900 dark:text-white">Unggah File</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Upload file dari perangkat</p>
+                                    <p className="font-semibold text-gray-900 dark:text-white">{t.common.uploadFile}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t.common.uploadFileDesc}</p>
                                 </div>
                             </button>
 
@@ -284,8 +289,8 @@ export default function AddMenu({ currentPath }: AddMenuProps) {
                             >
                                 <FaFolderOpen className="w-5 h-5 text-[#003a69] dark:text-[#ebbd18]" />
                                 <div>
-                                    <p className="font-semibold text-gray-900 dark:text-white">Unggah Folder</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Upload folder dengan isinya</p>
+                                    <p className="font-semibold text-gray-900 dark:text-white">{t.common.uploadFolder}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t.common.uploadFolderDesc}</p>
                                 </div>
                             </button>
                         </div>

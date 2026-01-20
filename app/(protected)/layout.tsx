@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/session';
 import ProtectedLayoutClient from './layout-client';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 interface ProtectedLayoutServerProps {
   children: ReactNode;
@@ -19,5 +20,9 @@ export default async function ProtectedLayout({ children }: ProtectedLayoutServe
     redirect('/no-access');
   }
 
-  return <ProtectedLayoutClient user={user}>{children}</ProtectedLayoutClient>;
+  return (
+    <LanguageProvider>
+      <ProtectedLayoutClient user={user}>{children}</ProtectedLayoutClient>
+    </LanguageProvider>
+  );
 }

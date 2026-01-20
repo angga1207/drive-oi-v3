@@ -9,6 +9,7 @@ import ShareModal from '@/components/modals/ShareModal';
 import RenameModal from '@/components/modals/RenameModal';
 import FilePreviewModal from '@/components/modals/FilePreviewModal';
 import MoveFolderModal from '@/components/modals/MoveFolderModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Swal from 'sweetalert2';
 
 interface FilesListClientProps {
@@ -43,6 +44,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
     const searchParams = useSearchParams();
     const highlightSlug = searchParams.get('highlight');
     const highlightRef = useRef<HTMLDivElement>(null);
+    const { t } = useLanguage();
 
     const [shareModal, setShareModal] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
     const [renameModal, setRenameModal] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
@@ -686,7 +688,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                             <div className="flex items-center gap-2">
                                 <FaCheckSquare className="w-5 h-5 text-[#ebbd18]" />
                                 <span className="font-semibold">
-                                    {selectedItems.size} item dipilih
+                                    {selectedItems.size} {t.files.selectedItems}
                                 </span>
                             </div>
                         </div>
@@ -695,7 +697,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                 onClick={toggleSelectAll}
                                 className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors"
                             >
-                                {selectedItems.size === items.length ? 'Batal Pilih Semua' : 'Pilih Semua'}
+                                {selectedItems.size === items.length ? t.files.deselectAll : t.files.selectAll}
                             </button>
                             <button
                                 onClick={handleDownloadSelected}
@@ -709,14 +711,14 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                 className="flex items-center gap-2 px-4 py-2 bg-[#ebbd18] hover:bg-[#d4a915] rounded-lg font-semibold transition-colors shadow-lg"
                             >
                                 <HiFolderOpen className="w-4 h-4" />
-                                <span>Pindahkan</span>
+                                <span>{t.files.bulkMove}</span>
                             </button>
                             <button
                                 onClick={handleDeleteSelected}
                                 className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors shadow-lg"
                             >
                                 <FaTrash className="w-4 h-4" />
-                                <span>Hapus Terpilih</span>
+                                <span>{t.files.bulkDelete}</span>
                             </button>
                         </div>
                     </div>
@@ -735,7 +737,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Cari file atau folder..."
+                                    placeholder={t.files.searchPlaceholder}
                                     className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-[#003a69]/30 focus:border-[#003a69] dark:focus:border-[#ebbd18] rounded-lg text-gray-900 dark:text-white text-sm outline-none placeholder-gray-400 transition-all"
                                 />
                                 {searchQuery && (
@@ -756,7 +758,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                 {isSearching ? (
                                     <div className="p-8 text-center">
                                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-[#003a69]"></div>
-                                        <p className="text-gray-500 mt-2">Mencari...</p>
+                                        <p className="text-gray-500 mt-2">{t.files.searching}</p>
                                     </div>
                                 ) : searchResults.length > 0 ? (
                                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -795,7 +797,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                 ) : (
                                     <div className="p-8 text-center">
                                         <FaSearch className="text-gray-300 text-3xl mx-auto mb-2" />
-                                        <p className="text-gray-500 text-sm">Tidak ada hasil</p>
+                                        <p className="text-gray-500 text-sm">{t.files.noSearchResults}</p>
                                     </div>
                                 )}
                             </div>
@@ -809,7 +811,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-[#ebbd18]/30 hover:border-[#ebbd18]/60 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-[#ebbd18]/5 transition-all shadow-sm"
                         >
                             <FaCheckSquare className="w-4 h-4" />
-                            <span>Pilih Item</span>
+                            <span>{t.files.selectAll}</span>
                         </button>
                     </div>
                 </div>
@@ -821,13 +823,13 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                     <div className="text-center">
                         <HiOutlineFolder className="text-6xl mb-4 text-[#003a69]/30 mx-auto" />
                         <h3 className="text-xl font-semibold text-[#003a69] dark:text-white mb-2">
-                            Folder Kosong
+                            {t.files.folderEmpty}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            Belum ada file atau folder di sini
+                            {t.files.folderEmptyDesc}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Seret dan lepas file ke sini untuk mengunggah
+                            {t.files.dragDropText}
                         </p>
                     </div>
                 </div>

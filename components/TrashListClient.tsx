@@ -6,6 +6,7 @@ import { FaFolder, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileI
 import { HiX, HiOutlineFolder } from 'react-icons/hi';
 import FilePreviewModal from '@/components/modals/FilePreviewModal';
 import Swal from 'sweetalert2';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TrashListClientProps {
     items: any[];
@@ -27,6 +28,7 @@ function getFileIcon(mime: string, extension: string) {
 
 export default function TrashListClient({ items }: TrashListClientProps) {
     const router = useRouter();
+    const { t } = useLanguage();
     const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
     const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -78,12 +80,12 @@ export default function TrashListClient({ items }: TrashListClientProps) {
     const handleRestore = async (slugs: string[]) => {
         try {
             const result = await Swal.fire({
-                title: 'Pulihkan Item?',
+                title: t.actionMenu.restore + ' Item?',
                 text: `Yakin ingin memulihkan ${slugs.length} item?`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Pulihkan',
-                cancelButtonText: 'Batal',
+                confirmButtonText: t.actionMenu.restore,
+                cancelButtonText: t.common.cancel,
                 confirmButtonColor: '#16a34a',
                 cancelButtonColor: '#6b7280',
                 customClass: {
@@ -134,12 +136,12 @@ export default function TrashListClient({ items }: TrashListClientProps) {
     const handleForceDelete = async (slugs: string[]) => {
         try {
             const result = await Swal.fire({
-                title: 'Hapus Permanen?',
+                title: t.actionMenu.deletePermanently + '?',
                 html: `<p class="text-gray-600">Item yang dihapus permanen <strong>tidak dapat dipulihkan</strong>.</p><p class="mt-2">Yakin ingin menghapus <strong>${slugs.length}</strong> item secara permanen?</p>`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus Permanen',
-                cancelButtonText: 'Batal',
+                confirmButtonText: t.actionMenu.deletePermanently,
+                cancelButtonText: t.common.cancel,
                 confirmButtonColor: '#dc2626',
                 cancelButtonColor: '#6b7280',
                 customClass: {
@@ -244,7 +246,7 @@ export default function TrashListClient({ items }: TrashListClientProps) {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Cari di kotak sampah..."
+                                placeholder={t.files.searchPlaceholder}
                                 className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-[#003a69]/30 focus:border-[#003a69] dark:focus:border-[#ebbd18] rounded-lg text-gray-900 dark:text-white text-sm outline-none placeholder-gray-400 transition-all"
                             />
                             {searchQuery && (
@@ -266,7 +268,7 @@ export default function TrashListClient({ items }: TrashListClientProps) {
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-[#ebbd18]/30 hover:border-[#ebbd18]/60 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-[#ebbd18]/5 transition-all shadow-sm"
                         >
                             <FaCheckSquare className="w-4 h-4" />
-                            <span>Pilih Item</span>
+                            <span>{t.files.selectAll}</span>
                         </button>
                     </div>
                 </div>
@@ -278,10 +280,10 @@ export default function TrashListClient({ items }: TrashListClientProps) {
                     <div className="text-center">
                         <HiOutlineFolder className="text-6xl mb-4 text-[#003a69]/30 mx-auto" />
                         <h3 className="text-xl font-semibold text-[#003a69] dark:text-white mb-2">
-                            {searchQuery ? 'Tidak Ada Hasil' : 'Kotak Sampah Kosong'}
+                            {searchQuery ? t.files.noSearchResults : t.trash.noTrash}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            {searchQuery ? 'Tidak ada item yang cocok dengan pencarian Anda' : 'Item yang dihapus akan muncul di sini'}
+                            {searchQuery ? t.files.noSearchResultsDesc : t.trash.noTrashDesc}
                         </p>
                         {!searchQuery && (
                             <p className="text-sm text-gray-500 dark:text-gray-400">

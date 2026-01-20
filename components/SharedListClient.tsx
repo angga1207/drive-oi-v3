@@ -8,6 +8,7 @@ import FilePreviewModal from './modals/FilePreviewModal';
 import RenameModal from './modals/RenameModal';
 import Swal from 'sweetalert2';
 import Tippy from '@tippyjs/react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SharedItem {
     id: number;
@@ -39,6 +40,7 @@ interface SharedListClientProps {
 
 export default function SharedListClient({ items: initialItems, currentUserId }: SharedListClientProps) {
     const router = useRouter();
+    const { t } = useLanguage();
     const [items, setItems] = useState<SharedItem[]>(initialItems);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredItems, setFilteredItems] = useState<SharedItem[]>(initialItems);
@@ -227,14 +229,14 @@ export default function SharedListClient({ items: initialItems, currentUserId }:
                     <div className="flex flex-col items-center justify-center py-16 text-gray-400">
                         <HiOutlineFolder className="w-24 h-24 mb-4 opacity-50" />
                         <p className="text-lg font-medium">
-                            {searchQuery ? 'Tidak ada hasil pencarian' : 'Tidak ada folder yang dibagikan'}
+                            {searchQuery ? t.files.noSearchResults : t.shared.noShared}
                         </p>
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
                                 className="mt-4 px-4 py-2 bg-[#003a69] hover:bg-[#002347] text-white rounded-lg transition-colors"
                             >
-                                Hapus Pencarian
+                                {t.files.cancel}
                             </button>
                         )}
                     </div>

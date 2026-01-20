@@ -14,12 +14,15 @@ import { RiLoginCircleFill, RiRefreshLine } from 'react-icons/ri';
 import { HiShieldCheck } from 'react-icons/hi2';
 import { AiOutlineExclamationCircle } from 'react-icons/ai';
 import { getAppVersion } from '@/lib/version';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`;
   const errorParam = searchParams.get('error');
+  const { t } = useLanguage();
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -27,16 +30,16 @@ function LoginPageContent() {
   // Handle error messages
   const getErrorMessage = (errorCode: string | null) => {
     if (!errorCode) return '';
-    
+
     const errorMessages: Record<string, string> = {
-      'session_expired': 'Sesi Anda telah berakhir atau token tidak valid. Silakan login kembali.',
+      'session_expired': t.auth.sessionExpired,
       'access_denied': 'Akses ditolak oleh Google',
       'no_code': 'Kode otorisasi tidak ditemukan',
       'oauth_failed': 'Login dengan Google gagal',
       'backend_failed': 'Login ke server gagal',
       'callback_error': 'Terjadi kesalahan saat callback',
     };
-    
+
     return errorMessages[errorCode] || errorCode;
   };
 
@@ -270,6 +273,11 @@ function LoginPageContent() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#003a69]/90 via-[#003a69]/80 to-[#005a9c]/90 backdrop-blur-[2px]"></div>
       </div>
 
+      {/* Language Switcher - Top Right */}
+      <div className="absolute top-6 right-6 z-20">
+        <LanguageSwitcher />
+      </div>
+
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#ebbd18] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -479,11 +487,11 @@ function LoginPageContent() {
         <div className="mt-10 text-center text-sm text-white/80 space-y-2">
           <p>
             Dengan melanjutkan, Anda menyetujui{' '}
-            <Link href="/terms" className="text-[#ebbd18] hover:text-[#ffd54f] hover:underline font-medium transition-colors">
+            <Link href="/terms-condition" className="text-[#ebbd18] hover:text-[#ffd54f] hover:underline font-medium transition-colors">
               Ketentuan Layanan
             </Link>{' '}
             dan{' '}
-            <Link href="/privacy" className="text-[#ebbd18] hover:text-[#ffd54f] hover:underline font-medium transition-colors">
+            <Link href="/privacy-policy" className="text-[#ebbd18] hover:text-[#ffd54f] hover:underline font-medium transition-colors">
               Kebijakan Privasi
             </Link>
           </p>

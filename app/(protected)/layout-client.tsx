@@ -13,6 +13,8 @@ import AddMenu from '@/components/AddMenu';
 import SearchModal from '@/components/SearchModal';
 import { UploadProvider } from '@/contexts/UploadContext';
 import { getAppVersion } from '@/lib/version';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface ProtectedLayoutProps {
   children: ReactNode;
@@ -30,6 +32,7 @@ interface ProtectedLayoutProps {
 export default function ProtectedLayout({ children, user }: ProtectedLayoutProps) {
   const pathname = usePathname();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const { t } = useLanguage();
 
   // Keyboard shortcut for search modal (Ctrl+K or Cmd+K)
   useEffect(() => {
@@ -45,22 +48,22 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
   }, []);
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
-    { name: 'Drive Saya', href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
-    { name: 'Favorit', href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
-    { name: 'Shared', href: '/shared', icon: <HiLink className="w-5 h-5" /> },
-    { name: 'Kotak Sampah', href: '/trash', icon: <HiTrash className="w-5 h-5" /> },
+    { name: t.nav.dashboard, href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
+    { name: t.nav.files, href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
+    { name: t.nav.favorite, href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
+    { name: t.nav.shared, href: '/shared', icon: <HiLink className="w-5 h-5" /> },
+    { name: t.nav.trash, href: '/trash', icon: <HiTrash className="w-5 h-5" /> },
     // Conditional menu for admin (user ID 1 or 4)
-    ...(user && (user.id === 1 || user.id === 4) ? [{ name: 'Users', href: '/users', icon: <HiUsers className="w-5 h-5" /> }] : []),
-    { name: 'Profil', href: '/profile', icon: <HiUser className="w-5 h-5" /> },
+    ...(user && (user.id === 1 || user.id === 4) ? [{ name: t.nav.users, href: '/users', icon: <HiUsers className="w-5 h-5" /> }] : []),
+    { name: t.nav.profile, href: '/profile', icon: <HiUser className="w-5 h-5" /> },
   ];
 
   // Mobile navigation - only show most important items
   const mobileNavigation = [
     { name: 'Home', href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
     { name: 'Files', href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
-    { name: 'Favorit', href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
-    { name: 'Profil', href: '/profile', icon: <HiUser className="w-5 h-5" /> },
+    { name: t.nav.favorite, href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
+    { name: t.nav.profile, href: '/profile', icon: <HiUser className="w-5 h-5" /> },
   ];
 
   const handleLogout = async () => {
@@ -73,17 +76,20 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
         {/* Sidebar */}
         <aside className="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden lg:flex lg:flex-col">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-3 px-6 py-5 border-b border-gray-200 dark:border-gray-700 select-none">
-            <img
-              src="/favicon.png"
-              alt="Logo Drive"
-              className="h-10 w-auto drop-shadow-2xl"
-            />
-            <img
-              src="/word.png"
-              alt="Logo Drive"
-              className="h-8 w-auto drop-shadow-2xl"
-            />
+          <div className="flex items-center justify-between gap-3 px-6 py-5 border-b border-gray-200 dark:border-gray-700 select-none">
+            <div className="flex items-center gap-3">
+              <img
+                src="/favicon.png"
+                alt="Logo Drive"
+                className="h-10 w-auto drop-shadow-2xl"
+              />
+              <img
+                src="/word.png"
+                alt="Logo Drive"
+                className="h-8 w-auto drop-shadow-2xl"
+              />
+            </div>
+            <LanguageSwitcher iconOnly />
           </div>
 
           {/* Add Menu */}
@@ -114,13 +120,13 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
           </nav>
 
           {/* User Section */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
             {/* Theme Toggle */}
             <ThemeToggle />
 
             {user && (
-              <div className="flex items-center gap-3 p-2">
-                <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-gray-200 dark:ring-gray-700">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 ring-2 ring-[#003a69] dark:ring-[#ebbd18]">
                   <Image
                     src={user.photo}
                     alt={user.name.fullname}
@@ -141,10 +147,10 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
             )}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+              className="group w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <HiLogout className="w-5 h-5" />
-              <span>Logout</span>
+              <HiLogout className="w-5 h-5 group-hover:rotate-180 transition-transform duration-300" />
+              <span>{t.common.logout}</span>
             </button>
           </div>
         </aside>
@@ -164,12 +170,16 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
                 className="h-8 w-auto drop-shadow-2xl"
               />
             </div>
-            <button
-              onClick={handleLogout}
-              className="text-red-600 dark:text-red-400 text-sm font-medium"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher iconOnly />
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
+              >
+                <HiLogout className="w-4 h-4" />
+                <span className="hidden sm:inline">{t.common.logout}</span>
+              </button>
+            </div>
           </div>
         </header>
 
@@ -206,6 +216,11 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
             })}
           </div>
         </nav>
+
+        {/* Floating Add Button for Mobile */}
+        <div className="lg:hidden fixed bottom-20 right-4 z-50">
+          <AddMenu isMobile />
+        </div>
 
         {/* Search Modal */}
         <SearchModal

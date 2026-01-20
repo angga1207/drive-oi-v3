@@ -9,6 +9,7 @@ import ShareModal from '@/components/modals/ShareModal';
 import RenameModal from '@/components/modals/RenameModal';
 import FilePreviewModal from '@/components/modals/FilePreviewModal';
 import Swal from 'sweetalert2';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function getFileIcon(mime: string, extension: string) {
     if (mime === 'folder') return <FaFolder className="text-white" />;
@@ -35,6 +36,7 @@ function getFileIcon(mime: string, extension: string) {
 
 export default function FavoriteListClient() {
     const router = useRouter();
+    const { t } = useLanguage();
     
     const [items, setItems] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -269,7 +271,7 @@ export default function FavoriteListClient() {
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="text-center">
                     <FaSpinner className="animate-spin text-4xl text-[#003a69] dark:text-[#ebbd18] mb-4 mx-auto" />
-                    <p className="text-gray-600 dark:text-gray-400">Memuat item favorit...</p>
+                    <p className="text-gray-600 dark:text-gray-400">{t.common.loading}...</p>
                 </div>
             </div>
         );
@@ -285,7 +287,7 @@ export default function FavoriteListClient() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Favorite
+                            {t.favorite.title}
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             {items.length} item
@@ -340,7 +342,7 @@ export default function FavoriteListClient() {
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-2 border-[#ebbd18]/30 hover:border-[#ebbd18]/60 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-[#ebbd18]/5 transition-all shadow-sm"
                     >
                         <FaCheckSquare className="w-4 h-4" />
-                        <span>Pilih Item</span>
+                        <span>{t.files.selectAll}</span>
                     </button>
                 </div>
             )}
@@ -352,16 +354,16 @@ export default function FavoriteListClient() {
                         <FaStar className="text-4xl text-gray-400 dark:text-gray-600" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        Belum Ada Item Favorit
+                        {t.favorite.noFavorites}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-center max-w-md mb-6">
-                        Item yang Anda tandai sebagai favorit akan muncul di sini untuk akses cepat.
+                    <p className="text-gray-500 dark:text-gray-400 text-center mb-6">
+                        {t.favorite.noFavoritesDesc}
                     </p>
                     <button
                         onClick={() => router.push('/files')}
                         className="px-6 py-3 bg-[#003a69] dark:bg-[#ebbd18] text-white dark:text-[#0a1929] rounded-lg hover:bg-[#004d8a] dark:hover:bg-[#d4a617] transition-colors font-medium"
                     >
-                        Jelajahi File
+                        {t.files.myDrive}
                     </button>
                 </div>
             ) : (

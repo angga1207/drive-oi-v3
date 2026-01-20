@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { HiUpload } from 'react-icons/hi';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DragDropZoneProps {
   onFilesDropped: (files: File[]) => void;
@@ -11,6 +12,7 @@ interface DragDropZoneProps {
 export default function DragDropZone({ onFilesDropped, children }: DragDropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragCounter, setDragCounter] = useState(0);
+  const { t } = useLanguage();
 
   // Global drag handlers to catch drag anywhere on the page
   useEffect(() => {
@@ -82,10 +84,10 @@ export default function DragDropZone({ onFilesDropped, children }: DragDropZoneP
               <HiUpload className="w-16 h-16 text-[#ebbd18]" />
             </div>
             <h2 className="text-3xl font-bold text-white mb-2">
-              Lepaskan untuk Upload
+              {t.files.dropToUpload}
             </h2>
             <p className="text-xl text-white/80">
-              File akan diunggah ke folder ini
+              {t.files.dropMessage}
             </p>
           </div>
         </div>

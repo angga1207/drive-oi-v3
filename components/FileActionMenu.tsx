@@ -6,6 +6,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import Swal from 'sweetalert2';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FileActionMenuProps {
     item: any;
@@ -36,6 +37,7 @@ export default function FileActionMenu({
 }: FileActionMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const { t } = useLanguage();
 
     // Notify parent when menu is toggled
     useEffect(() => {
@@ -63,14 +65,14 @@ export default function FileActionMenu({
     const handleDelete = () => {
         setIsOpen(false);
         Swal.fire({
-            title: 'Hapus ' + (item.type === 'folder' ? 'Folder' : 'File') + '?',
+            title: t.common.delete + ' ' + (item.type === 'folder' ? 'Folder' : 'File') + '?',
             text: `Apakah Anda yakin ingin menghapus "${item.name}"? Item ini akan dipindahkan ke kotak sampah.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc2626',
             cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal',
+            confirmButtonText: 'Ya, ' + t.common.delete + '!',
+            cancelButtonText: t.common.cancel,
             background: '#fff',
             customClass: {
                 popup: 'rounded-xl',
@@ -120,7 +122,7 @@ export default function FileActionMenu({
                 title: 'Gagal!',
                 text: 'Gagal menyalin link',
                 icon: 'error',
-                confirmButtonText: 'OK',
+                confirmButtonText: t.common.ok,
                 customClass: {
                     popup: 'rounded-xl',
                 },
@@ -146,24 +148,24 @@ export default function FileActionMenu({
             },
             !isFavorite && { type: 'divider' },
             onFavorite && {
-                label: isFavorite ? 'Hapus dari Favorit' : (item.favorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'),
+                label: isFavorite ? t.actionMenu.removeFromFavorite : (item.favorite ? t.actionMenu.removeFromFavorite : t.actionMenu.addToFavorite),
                 icon: (isFavorite || item.favorite) ? <FaStar className="w-4 h-4 text-[#ebbd18]" /> : <FaRegStar className="w-4 h-4" />,
                 onClick: handleToggleFavorite,
             },
             {
-                label: 'Bagikan Folder',
+                label: t.actionMenu.share,
                 icon: <FaShareAlt className="w-4 h-4" />,
                 onClick: () => {
                     setIsOpen(false);
                     onShare(item);
                 },
             }, item.publicity?.status === 'public' && {
-                label: 'Salin Link',
+                label: t.actionMenu.copyLink,
                 icon: <FaCopy className="w-4 h-4" />,
                 onClick: handleCopyLink,
                 className: 'text-[#ebbd18] hover:bg-[#ebbd18]/10',
             }, {
-                label: 'Ganti Nama',
+                label: t.actionMenu.rename,
                 icon: <FaEdit className="w-4 h-4" />,
                 onClick: () => {
                     setIsOpen(false);
@@ -172,7 +174,7 @@ export default function FileActionMenu({
             },
             { type: 'divider' },
             {
-                label: 'Hapus Folder',
+                label: t.actionMenu.delete,
                 icon: <FaTrash className="w-4 h-4" />,
                 onClick: handleDelete,
                 className: 'text-red-600 hover:bg-red-50',
@@ -195,7 +197,7 @@ export default function FileActionMenu({
             },
             !isFavorite && { type: 'divider' },
             {
-                label: 'Buka Berkas',
+                label: t.actionMenu.open,
                 icon: <FaEye className="w-4 h-4" />,
                 onClick: () => {
                     setIsOpen(false);
@@ -203,12 +205,12 @@ export default function FileActionMenu({
                 },
             },
             onFavorite && {
-                label: isFavorite ? 'Hapus dari Favorit' : (item.favorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'),
+                label: isFavorite ? t.actionMenu.removeFromFavorite : (item.favorite ? t.actionMenu.removeFromFavorite : t.actionMenu.addToFavorite),
                 icon: (isFavorite || item.favorite) ? <FaStar className="w-4 h-4 text-[#ebbd18]" /> : <FaRegStar className="w-4 h-4" />,
                 onClick: handleToggleFavorite,
             },
             {
-                label: 'Bagikan File',
+                label: t.actionMenu.share,
                 icon: <FaShareAlt className="w-4 h-4" />,
                 onClick: () => {
                     setIsOpen(false);
@@ -216,13 +218,13 @@ export default function FileActionMenu({
                 },
             },
             item.publicity?.status === 'public' && {
-                label: 'Salin Link',
+                label: t.actionMenu.copyLink,
                 icon: <FaCopy className="w-4 h-4" />,
                 onClick: handleCopyLink,
                 className: 'text-[#ebbd18] hover:bg-[#ebbd18]/10',
             },
             {
-                label: 'Ganti Nama',
+                label: t.actionMenu.rename,
                 icon: <FaEdit className="w-4 h-4" />,
                 onClick: () => {
                     setIsOpen(false);
@@ -230,7 +232,7 @@ export default function FileActionMenu({
                 },
             },
             {
-                label: 'Unduh File',
+                label: t.actionMenu.download,
                 icon: <FaDownload className="w-4 h-4" />,
                 onClick: () => {
                     setIsOpen(false);
@@ -239,7 +241,7 @@ export default function FileActionMenu({
             },
             { type: 'divider' },
             {
-                label: 'Hapus File',
+                label: t.actionMenu.delete,
                 icon: <FaTrash className="w-4 h-4" />,
                 onClick: handleDelete,
                 className: 'text-red-600 hover:bg-red-50',

@@ -9,6 +9,7 @@ import { HiDocumentText, HiFolder } from 'react-icons/hi2';
 import { FiEdit2 } from 'react-icons/fi';
 import { FaGoogle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   HiKey, HiArrowUpTray, HiTrash, HiArrowPath, HiExclamationTriangle,
   HiPencil, HiStar, HiLockOpen, HiFolderPlus, HiArrowRight, HiLink,
@@ -18,6 +19,7 @@ import {
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -364,7 +366,7 @@ export default function ProfilePage() {
                   className="group relative px-6 py-3 bg-linear-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 font-semibold"
                 >
                   <FiEdit2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                  <span>Edit Profil</span>
+                  <span>{t.common.edit} {t.profile.title}</span>
                 </button>
               </div>
 
@@ -424,14 +426,14 @@ export default function ProfilePage() {
               </div>
             </div>
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Penyimpanan
+              {t.profile.storageInfo}
             </h3>
             <p className="text-2xl font-bold text-primary dark:text-white mb-1">
               {profile.storage.used} / {profile.storage.total}
             </p>
             <div className="mt-3">
               <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                <span>{profile.storage.used} terpakai</span>
+                <span>{profile.storage.used} {t.profile.storageUsed}</span>
                 <span>{Math.round(profile.storage.percent)}%</span>
               </div>
               <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -453,7 +455,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Total File
+              {t.profile.totalFiles}
             </h3>
             <p className="text-2xl font-bold text-primary dark:text-white">
               {profile.datas.files.toLocaleString()}
@@ -470,7 +472,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Total Folder
+              {t.profile.totalFolders}
             </h3>
             <p className="text-2xl font-bold text-primary dark:text-white">
               {profile.datas.folders.toLocaleString()}
@@ -484,7 +486,7 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FaGoogle className="w-5 h-5 text-red-600" />
-            Integrasi Google
+            {t.profile.accountSettings}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
@@ -502,7 +504,7 @@ export default function ProfilePage() {
                 <div className="mt-3 flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-green-600 dark:text-green-400 text-sm font-medium">
-                    Terhubung
+                    {t.common.success}
                   </span>
                 </div>
               )}
@@ -517,7 +519,7 @@ export default function ProfilePage() {
             >
               <FaGoogle className={`w-5 h-5 ${profile?.googleIntegated ? 'text-gray-400' : 'text-red-600'}`} />
               <span>
-                {googleLoading ? 'Menghubungkan...' : profile?.googleIntegated ? 'Sudah Terhubung' : 'Hubungkan Google'}
+                {googleLoading ? t.profile.saving + '...' : profile?.googleIntegated ? t.common.success : 'Hubungkan Google'}
               </span>
             </button>
           </div>
@@ -545,7 +547,7 @@ export default function ProfilePage() {
           ) : activities.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <HiInboxArrowDown className="w-16 h-16 text-gray-400 mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">Belum ada aktivitas</p>
+              <p className="text-gray-600 dark:text-gray-400">{t.files.noFiles}</p>
             </div>
           ) : (
             <>

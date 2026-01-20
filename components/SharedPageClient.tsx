@@ -6,6 +6,7 @@ import DragDropZone from './DragDropZone';
 import UploadProgressCard from './UploadProgressCard';
 import { useUpload } from '@/contexts/UploadContext';
 import Swal from 'sweetalert2';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SharedPageClientProps {
   items: any[];
@@ -16,6 +17,7 @@ interface SharedPageClientProps {
 export default function SharedPageClient({ items, currentPath, currentUserId }: SharedPageClientProps) {
   const router = useRouter();
   const { addFilesAndUpload, uploadFiles, removeFile, clearAll } = useUpload();
+  const { t } = useLanguage();
 
   const handleFilesDropped = async (files: File[]) => {
     // Validate file types

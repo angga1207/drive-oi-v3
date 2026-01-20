@@ -5,6 +5,7 @@ import FilesListClient from './FilesListClient';
 import DragDropZone from './DragDropZone';
 import UploadProgressCard from './UploadProgressCard';
 import { useUpload } from '@/contexts/UploadContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Swal from 'sweetalert2';
 
 interface FilesPageClientProps {
@@ -15,6 +16,7 @@ interface FilesPageClientProps {
 export default function FilesPageClient({ items, currentPath }: FilesPageClientProps) {
   const router = useRouter();
   const { addFilesAndUpload, uploadFiles, removeFile, clearAll } = useUpload();
+  const { t } = useLanguage();
 
   const handleFilesDropped = async (files: File[]) => {
     // Validate file types
