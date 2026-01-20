@@ -14,5 +14,10 @@ export default async function ProtectedLayout({ children }: ProtectedLayoutServe
     redirect('/login');
   }
 
+  // Check if user has access
+  if (!user.access) {
+    redirect('/no-access');
+  }
+
   return <ProtectedLayoutClient user={user}>{children}</ProtectedLayoutClient>;
 }
