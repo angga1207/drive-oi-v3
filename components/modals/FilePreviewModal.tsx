@@ -29,7 +29,8 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
             extension === 'pdf' ||
             mime.startsWith('video') ||
             mime.startsWith('audio') ||
-            ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)
+            ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension) ||
+            mime.startsWith('text')
         );
     };
 
@@ -164,6 +165,20 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
                                             >
                                                 Browser Anda tidak mendukung audio player.
                                             </audio>
+                                        </div>
+                                    )}
+
+                                    {/* Fallback for unsupported preview types */}
+                                    {item.mime.startsWith('text') && (
+                                        <div className="w-full max-w-3xl">
+                                            <div className="flex justify-center mb-6">
+                                                {getFileIcon(item.mime, item.extension)}
+                                            </div>
+                                            <iframe
+                                                src={previewUrl}
+                                                className="w-full h-[600px] rounded-lg border-2 border-gray-200 dark:border-gray-700"
+                                                title={item.name}
+                                            />
                                         </div>
                                     )}
                                 </>
