@@ -218,7 +218,7 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
         </nav>
 
         {/* Floating Add Button for Mobile */}
-        <div className="lg:hidden fixed bottom-20 right-4 z-50">
+        <div className="lg:hidden fixed bottom-16 right-2 z-50">
           <AddMenu isMobile />
         </div>
 

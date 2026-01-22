@@ -7,7 +7,7 @@ import { ProfileData, Activity } from '@/lib/types';
 import { BiSolidData } from 'react-icons/bi';
 import { HiDocumentText, HiFolder } from 'react-icons/hi2';
 import { FiEdit2 } from 'react-icons/fi';
-import { FaGoogle } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaGoogle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
@@ -569,9 +569,6 @@ export default function ProfilePage() {
                           <span className="flex items-center gap-1">
                             <HiClock className="w-4 h-4" /> {formatDate(activity.created_at)}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <HiGlobeAlt className="w-4 h-4" /> {activity.ip_address}
-                          </span>
                         </div>
                       </div>
                     </div>
@@ -586,9 +583,12 @@ export default function ProfilePage() {
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
-                      ← Sebelumnya
+                      <FaArrowLeft className="inline-block w-4 h-4 mr-1" />
+                      <span className='hidden lg:block'>
+                        Sebelumnya
+                      </span>
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -609,9 +609,12 @@ export default function ProfilePage() {
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === lastPage}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
-                      Selanjutnya →
+                      <span className='hidden lg:block'>
+                        Selanjutnya
+                      </span>
+                      <FaArrowRight className="inline-block w-4 h-4 ml-1" />
                     </button>
                   </div>
                 </div>

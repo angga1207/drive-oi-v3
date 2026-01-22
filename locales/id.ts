@@ -27,6 +27,7 @@ export const id = {
         uploadFileDesc: 'Unggah file ke lokasi saat ini',
         uploadFolder: 'Unggah Folder',
         uploadFolderDesc: 'Unggah folder ke lokasi saat ini',
+        infoForSemestaLogin: 'Untuk login menggunakan akun Semesta, silakan gunakan NIP Anda dan Kata Sandi Semesta Anda.',
     },
 
     // Navigation

@@ -18,7 +18,7 @@ export default function FilesPageWrapper({ pathData, items, currentPath }: Files
     const { t } = useLanguage();
 
     return (
-        <div className="space-y-6 select-none">
+        <div className="space-y-6 select-none pb-15">
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#003a69] dark:text-[#ebbd18] mb-2 flex items-center gap-2">
@@ -33,7 +33,9 @@ export default function FilesPageWrapper({ pathData, items, currentPath }: Files
             />
 
             {/* Items Grid - Always render FilesPageClient with DragDropZone */}
-            <FilesPageClient items={items} currentPath={currentPath} />
+            <FilesPageClient
+                items={items}
+                currentPath={currentPath} />
         </div>
     );
 }

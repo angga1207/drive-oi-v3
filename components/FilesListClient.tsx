@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { FaFolder, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFileArchive, FaFileCode, FaFile, FaUser, FaGlobe, FaCalendarAlt, FaTrash, FaCheckSquare, FaDownload, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaFolder, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFileArchive, FaFileCode, FaFile, FaCalendarAlt, FaTrash, FaCheckSquare, FaDownload, FaSearch, FaTimes, FaShareAltSquare } from 'react-icons/fa';
 import { HiX, HiFolderOpen, HiOutlineFolder } from 'react-icons/hi';
 import FileActionMenu from '@/components/FileActionMenu';
 import ShareModal from '@/components/modals/ShareModal';
@@ -11,6 +11,7 @@ import FilePreviewModal from '@/components/modals/FilePreviewModal';
 import MoveFolderModal from '@/components/modals/MoveFolderModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Swal from 'sweetalert2';
+import Tippy from '@tippyjs/react';
 
 interface FilesListClientProps {
     items: any[];
@@ -885,7 +886,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                     <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-[#003a69] dark:group-hover:text-[#ebbd18] transition-colors truncate">
                                         {item.name}{item.type === 'folder' ? '' : `.${item.extension}`}
                                     </h3>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1 whitespace-nowrap">
                                         {item.type === 'file' && (
                                             <>
                                                 <span className='text-xs text-gray-500 dark:text-gray-400'>{item.size}</span>
@@ -902,17 +903,22 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                         )}
                                         {item.created_at && (
                                             <>
-                                                <span className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400'>
-                                                    <FaCalendarAlt className="w-2.5 h-2.5" />
-                                                    {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })},  {new Date(item.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
-                                                </span>
+                                                <Tippy content={new Date(item.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB'} className='block lg:hidden'>
+                                                    <span className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 max-w-[160px] sm:max-w-full truncate'>
+                                                        <FaCalendarAlt className="w-2.5 h-2.5 flex-none" />
+                                                        {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })},  {new Date(item.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                                                    </span>
+                                                </Tippy>
                                             </>
                                         )}
                                         {item.publicity.status === 'public' && (
                                             <>
                                                 <span>•</span>
                                                 <span className="flex items-center gap-1 text-[#ebbd18] text-xs">
-                                                    <FaGlobe className="w-2.5 h-2.5" /> Publik
+                                                    <FaShareAltSquare className="w-4 h-4" />
+                                                    <span className='hidden lg:block'>
+                                                        Publik
+                                                    </span>
                                                 </span>
                                             </>
                                         )}
@@ -929,6 +935,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
                                         onDelete={handleDelete}
                                         onDownload={handleDownload}
                                         onOpen={handleOpenFile}
+                                        direction={items.length - 3 <= index ? 'top' : 'bottom'}
                                         onMenuToggle={(isOpen) => {
                                             // setActiveMenuId(isOpen ? item.id : null);
                                             if (isOpen && item.id !== activeMenuId) {

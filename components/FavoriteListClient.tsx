@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { FaFolder, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFileArchive, FaFileCode, FaFile, FaStar, FaSpinner, FaCheckSquare, FaDownload, FaGlobe, FaCalendarAlt, FaTrash } from 'react-icons/fa';
+import { FaFolder, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFileArchive, FaFileCode, FaFile, FaStar, FaSpinner, FaCheckSquare, FaDownload, FaGlobe, FaCalendarAlt, FaTrash, FaShareAltSquare } from 'react-icons/fa';
 import { HiX } from 'react-icons/hi';
 import FileActionMenu from '@/components/FileActionMenu';
 import ShareModal from '@/components/modals/ShareModal';
@@ -37,7 +37,7 @@ function getFileIcon(mime: string, extension: string) {
 export default function FavoriteListClient() {
     const router = useRouter();
     const { t } = useLanguage();
-    
+
     const [items, setItems] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [shareModal, setShareModal] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
@@ -67,7 +67,7 @@ export default function FavoriteListClient() {
         if (isSelectionMode && selectedItems.size === 0 && prevSelectedSizeRef.current > 0) {
             setIsSelectionMode(false);
         }
-        
+
         // Update the previous size for next comparison
         prevSelectedSizeRef.current = selectedItems.size;
     }, [isSelectionMode, selectedItems]);
@@ -77,7 +77,7 @@ export default function FavoriteListClient() {
         try {
             const response = await fetch('/api/favorite');
             const data = await response.json();
-            
+
             if (data.status === 'success') {
                 setItems(data.data || []);
             } else {
@@ -115,11 +115,11 @@ export default function FavoriteListClient() {
         if (isShiftKey && anchorIndex !== null) {
             const start = Math.min(anchorIndex, index);
             const end = Math.max(anchorIndex, index);
-            
+
             for (let i = start; i <= end; i++) {
                 newSelected.add(items[i].slug);
             }
-            
+
             setSelectedItems(newSelected);
             setLastSelectedIndex(index);
         } else {
@@ -128,7 +128,7 @@ export default function FavoriteListClient() {
             } else {
                 newSelected.add(slug);
             }
-            
+
             setSelectedItems(newSelected);
             setLastSelectedIndex(index);
             setAnchorIndex(index);
@@ -378,11 +378,10 @@ export default function FavoriteListClient() {
                                     toggleSelection(item.slug, index, e.shiftKey);
                                 }
                             }}
-                            className={`group flex items-center gap-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border-2 ${
-                                selectedItems.has(item.slug)
-                                    ? 'border-[#003a69] bg-[#003a69]/5 dark:bg-[#003a69]/10'
-                                    : 'border-[#ebbd18]/20 hover:border-[#ebbd18]/60'
-                            } hover:shadow-lg hover:shadow-[#003a69]/10 transition-all duration-300 cursor-pointer relative ${isMenuOpen && item.id === activeMenuId ? 'z-10' : ''}`}
+                            className={`group flex items-center gap-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border-2 ${selectedItems.has(item.slug)
+                                ? 'border-[#003a69] bg-[#003a69]/5 dark:bg-[#003a69]/10'
+                                : 'border-[#ebbd18]/20 hover:border-[#ebbd18]/60'
+                                } hover:shadow-lg hover:shadow-[#003a69]/10 transition-all duration-300 cursor-pointer relative ${isMenuOpen && item.id === activeMenuId ? 'z-10' : ''}`}
                         >
                             {/* Checkbox (in selection mode) */}
                             {isSelectionMode && (
@@ -402,11 +401,10 @@ export default function FavoriteListClient() {
 
                             {/* Icon */}
                             <div
-                                className={`w-12 h-12 flex items-center justify-center text-3xl rounded-xl ${
-                                    item.type === 'folder'
-                                        ? 'bg-linear-to-br from-[#003a69] to-[#005a9c]'
-                                        : 'bg-linear-to-br from-[#ebbd18] to-[#c79a00]'
-                                } shadow-md group-hover:scale-110 transition-transform`}
+                                className={`w-12 h-12 flex items-center justify-center text-3xl rounded-xl ${item.type === 'folder'
+                                    ? 'bg-linear-to-br from-[#003a69] to-[#005a9c]'
+                                    : 'bg-linear-to-br from-[#ebbd18] to-[#c79a00]'
+                                    } shadow-md group-hover:scale-110 transition-transform`}
                             >
                                 {getFileIcon(item.mime || item.type, item.extension || '')}
                             </div>
@@ -416,7 +414,7 @@ export default function FavoriteListClient() {
                                 <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-[#003a69] dark:group-hover:text-[#ebbd18] transition-colors truncate">
                                     {item.name}{item.type === 'file' && item.extension ? `.${item.extension}` : ''}
                                 </h3>
-                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1 whitespace-nowrap">
                                     {item.type === 'file' && item.size && (
                                         <>
                                             <span className='text-xs text-gray-500 dark:text-gray-400'>{item.size}</span>
@@ -433,8 +431,8 @@ export default function FavoriteListClient() {
                                     )}
                                     {item.created_at && (
                                         <>
-                                            <span className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400'>
-                                                <FaCalendarAlt className="w-2.5 h-2.5" />
+                                            <span className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 w-[150px] lg:w-auto truncate'>
+                                                <FaCalendarAlt className="flex-none w-2.5 h-2.5" />
                                                 {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}, {new Date(item.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
                                             </span>
                                         </>
@@ -443,7 +441,10 @@ export default function FavoriteListClient() {
                                         <>
                                             <span>•</span>
                                             <span className="flex items-center gap-1 text-[#ebbd18] text-xs">
-                                                <FaGlobe className="w-2.5 h-2.5" /> Publik
+                                                <FaShareAltSquare className="w-4 h-4" />
+                                                <span className='hidden lg:block'>
+                                                    Publik
+                                                </span>
                                             </span>
                                         </>
                                     )}
@@ -454,6 +455,7 @@ export default function FavoriteListClient() {
                             {!isSelectionMode && (
                                 <FileActionMenu
                                     item={item}
+                                    direction={items.length - index <= 3 ? 'top' : 'bottom'}
                                     onShare={() => setShareModal({ isOpen: true, item })}
                                     onRename={() => setRenameModal({ isOpen: true, item })}
                                     onDelete={async () => {

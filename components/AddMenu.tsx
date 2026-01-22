@@ -236,7 +236,7 @@ export default function AddMenu({ currentPath, isMobile = false }: AddMenuProps)
                     onClick={() => !isAddMenuDisabled() && setIsMenuOpen(!isMenuOpen)}
                     disabled={isAddMenuDisabled()}
                     className={`flex items-center justify-center gap-2 font-semibold rounded-xl shadow-lg transition-all duration-300 ${isMobile
-                        ? 'w-14 h-14 rounded-full'
+                        ? 'w-14 h-14 !rounded-full'
                         : 'w-full px-6 py-3'
                         } ${isAddMenuDisabled()
                             ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'

@@ -350,6 +350,10 @@ function LoginPageContent() {
               />
             )}
 
+            <div className="">
+              {t.common.infoForSemestaLogin}
+            </div>
+
             <Input
               ref={usernameRef}
               label="Username / NIP"

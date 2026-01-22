@@ -20,6 +20,7 @@ interface FileActionMenuProps {
     onRefresh?: () => void;
     isFavorite?: boolean;
     hideMove?: boolean;
+    direction?: 'top' | 'bottom';
 }
 
 export default function FileActionMenu({
@@ -34,6 +35,7 @@ export default function FileActionMenu({
     onRefresh,
     isFavorite = false,
     hideMove = false,
+    direction = 'bottom',
 }: FileActionMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -290,7 +292,7 @@ export default function FileActionMenu({
                 </button>
 
                 {isOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-[#ebbd18]/20 z-100 overflow-hidden">
+                    <div className={`absolute right-0 ${direction === 'bottom' ? 'top-full mt-1' : 'bottom-full mb-1'} w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-[#ebbd18]/20 z-100 overflow-hidden`}>
                         <div className="py-1">
                             {menuItems.map((menuItem: any, index) => {
                                 if (menuItem.type === 'divider') {
@@ -317,7 +319,7 @@ export default function FileActionMenu({
                                             'text-gray-700 dark:text-gray-300 hover:bg-[#ebbd18]/10 dark:hover:bg-[#ebbd18]/20'
                                             } ${menuItem.disabled ? 'opacity-60' : ''}`}
                                     >
-                                        {menuItem.icon}
+                                        {menuItem.image ? menuItem.image : menuItem.icon}
                                         <span>{menuItem.label}</span>
                                     </button>
                                 );

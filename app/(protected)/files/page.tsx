@@ -61,10 +61,10 @@ export default async function FilesPage({ searchParams }: FilesPageProps) {
     const items = itemsResponse.success ? itemsResponse.data : [];
 
     return (
-        <FilesPageWrapper 
-            pathData={pathData} 
-            items={items} 
-            currentPath={slug} 
+        <FilesPageWrapper
+            pathData={pathData}
+            items={items}
+            currentPath={slug}
         />
     );
 }

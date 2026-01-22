@@ -29,6 +29,7 @@ export const plm: TranslationKeys = {
         uploadFileDesc: 'Unggah file ke sini',
         uploadFolder: 'Unggah Folder',
         uploadFolderDesc: 'Unggah folder ke sini',
+        infoForSemestaLogin: 'Untuak login makai akun Semesta, silakan gunakan NIP kamu dan Kata Sandi Semesta.',
     },
 
     // Navigation

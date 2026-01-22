@@ -29,6 +29,7 @@ export const en: TranslationKeys = {
         uploadFileDesc: 'Upload a file here',
         uploadFolder: 'Upload Folder',
         uploadFolderDesc: 'Upload a folder here',
+        infoForSemestaLogin: 'To log in using a Semesta account, please use your NIP and Semesta Password.',
     },
 
     // Navigation
