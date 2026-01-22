@@ -350,9 +350,10 @@ function LoginPageContent() {
               />
             )}
 
-            <div className="">
+            <div className="text-center font-semibold text-gray-700 dark:text-gray-300">
               {t.common.infoForSemestaLogin}
             </div>
+            <hr />
 
             <Input
               ref={usernameRef}
