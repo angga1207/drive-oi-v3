@@ -162,7 +162,7 @@ export default function SharedListClient({ items: initialItems, currentUserId }:
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ids: [item.id],
+                    ids: [item.slug],
                 }),
             });
 
