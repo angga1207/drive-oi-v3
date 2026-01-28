@@ -592,7 +592,7 @@ export default function UsersPage() {
                                                 <img
                                                     src={user.photo}
                                                     onError={(e) => {
-                                                        e.currentTarget.src = '/logo-oi.webp';
+                                                        e.currentTarget.src = '/favicon.png';
                                                     }}
                                                     alt={user.fullname}
                                                     className="w-10 h-10 rounded-full object-cover"

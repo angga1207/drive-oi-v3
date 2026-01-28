@@ -287,7 +287,7 @@ export default function SharedListClient({ items: initialItems, currentUserId }:
                                                 <img
                                                     src={item.author.photo}
                                                     onError={(e) => {
-                                                        e.currentTarget.src = '/logo-oi.webp';
+                                                        e.currentTarget.src = '/favicon.png';
                                                     }}
                                                     alt={item.author.fullname}
                                                     className="w-4 h-4 rounded-full object-cover"

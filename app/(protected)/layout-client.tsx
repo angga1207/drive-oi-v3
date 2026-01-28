@@ -129,6 +129,9 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
                 <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 ring-2 ring-[#003a69] dark:ring-[#ebbd18]">
                   <Image
                     src={user.photo}
+                    onError={(e) => {
+                      e.currentTarget.src = '/favicon.png';
+                    }}
                     alt={user.name.fullname}
                     fill
                     className="object-cover"

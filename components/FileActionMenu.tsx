@@ -141,7 +141,7 @@ export default function FileActionMenu({
                     src={item.author.photo}
                     alt={item.author.fullname}
                     onError={(e) => {
-                        e.currentTarget.src = '/logo-oi.webp';
+                        e.currentTarget.src = '/favicon.png';
                     }}
                     className="w-4 h-4 rounded-full" />,
                 onClick: () => { },
@@ -189,7 +189,7 @@ export default function FileActionMenu({
                 image: <img
                     src={item.author.photo}
                     onError={(e) => {
-                        e.currentTarget.src = '/logo-oi.webp';
+                        e.currentTarget.src = '/favicon.png';
                     }}
                     alt={item.author.fullname}
                     className="w-4 h-4 rounded-full" />,

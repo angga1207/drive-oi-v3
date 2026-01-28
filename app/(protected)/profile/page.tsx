@@ -660,6 +660,9 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-4">
                   <img
                     src={photoPreview || profile?.photo}
+                    onError={(e) => {
+                      e.currentTarget.src = '/favicon.png';
+                    }}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
                   />
