@@ -509,6 +509,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
             });
         }
     };
+
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -557,6 +558,7 @@ export default function FilesListClient({ items }: FilesListClientProps) {
         setShowSearchResults(false);
         setSearchResults([]);
     };
+    
     const handleMove = async (targetId: string | number) => {
         try {
             const response = await fetch('/api/moveItem', {

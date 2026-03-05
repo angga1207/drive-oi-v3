@@ -1,5 +1,8 @@
+import { Suspense } from 'react';
 import { FaShareAlt } from 'react-icons/fa';
 import SharedPageClient from '@/components/SharedPageClient';
+import SharedListClient from '@/components/SharedListClient';
+import SharedItemsSkeleton from '@/components/SharedItemsSkeleton';
 import Breadcrumb from '@/components/Breadcrumb';
 import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/session';
@@ -54,7 +57,7 @@ async function getSharedPath(slug?: string) {
 
         if (!response.ok) {
             console.error('Failed to fetch path:', response.status);
-            
+
             // Check if Unauthenticated error
             if (response.status === 401) {
                 const data = await response.json();
@@ -62,7 +65,7 @@ async function getSharedPath(slug?: string) {
                     return { paths: [], current: null, isUnauthenticated: true };
                 }
             }
-            
+
             return { paths: [], current: null };
         }
 
@@ -103,7 +106,7 @@ async function getSharedFolders(slug?: string) {
 
         if (!response.ok) {
             console.error('Failed to fetch shared folders:', response.status);
-            
+
             // Check if Unauthenticated error
             if (response.status === 401) {
                 const data = await response.json();
@@ -111,7 +114,7 @@ async function getSharedFolders(slug?: string) {
                     return { items: [], isUnauthenticated: true };
                 }
             }
-            
+
             return { items: [] };
         }
 
@@ -124,30 +127,36 @@ async function getSharedFolders(slug?: string) {
     }
 }
 
-export default async function SharedPage({ searchParams }: SharedPageProps) {
-    const params = await searchParams;
-    const slug = params._p;
+async function SharedItemsFetcher({ slug }: { slug?: string }) {
+    const [foldersData, currentUser] = await Promise.all([
+        getSharedFolders(slug),
+        getCurrentUser(),
+    ]);
 
-    // Get path data for breadcrumb
-    const pathData = await getSharedPath(slug);
-    
-    // Check if Unauthenticated
-    if ((pathData as any).isUnauthenticated) {
-        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
-        redirect('/api/auto-logout?error=session_expired&redirect=/shared');
-    }
-
-    // Get shared folders/items
-    const foldersData = await getSharedFolders(slug);
-    
-    // Check if Unauthenticated
     if ((foldersData as any).isUnauthenticated) {
         console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
         redirect('/api/auto-logout?error=session_expired&redirect=/shared');
     }
 
-    // Get current user
-    const currentUser = await getCurrentUser();
+    return (
+        <SharedListClient
+            items={foldersData.items}
+            currentUserId={currentUser?.id}
+        />
+    );
+}
+
+export default async function SharedPage({ searchParams }: SharedPageProps) {
+    const params = await searchParams;
+    const slug = params._p;
+
+    // Get path data for breadcrumb (blocking — needed before render)
+    const pathData = await getSharedPath(slug);
+
+    if ((pathData as any).isUnauthenticated) {
+        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
+        redirect('/api/auto-logout?error=session_expired&redirect=/shared');
+    }
 
     return (
         <div className="space-y-6 select-none">
@@ -159,7 +168,7 @@ export default async function SharedPage({ searchParams }: SharedPageProps) {
                 </h1>
             </div>
 
-            {/* Breadcrumb - only show when inside a folder */}
+            {/* Breadcrumb — only inside a folder */}
             {slug && (
                 <Breadcrumb
                     paths={pathData.paths || []}
@@ -169,8 +178,12 @@ export default async function SharedPage({ searchParams }: SharedPageProps) {
                 />
             )}
 
-            {/* Items List with Drag & Drop */}
-            <SharedPageClient items={foldersData.items} currentPath={slug} currentUserId={currentUser?.id} />
+            {/* Items with DragDrop + skeleton */}
+            <SharedPageClient currentPath={slug}>
+                <Suspense key={slug ?? 'root'} fallback={<SharedItemsSkeleton />}>
+                    <SharedItemsFetcher slug={slug} />
+                </Suspense>
+            </SharedPageClient>
         </div>
     );
 }

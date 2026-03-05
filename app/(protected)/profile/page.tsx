@@ -345,8 +345,11 @@ export default function ProfilePage() {
               <div className="relative">
                 <img
                   src={profile.photo}
+                  onError={(e) => {
+                    e.currentTarget.src = '/favicon.png';
+                  }}
                   alt={profile.fullname}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
+                  className="w-32 h-32 rounded-full object-contain border-4 border-gray-200 dark:border-gray-700"
                 />
                 <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800"></div>
               </div>
@@ -664,7 +667,7 @@ export default function ProfilePage() {
                       e.currentTarget.src = '/favicon.png';
                     }}
                     alt="Profile"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
+                    className="w-24 h-24 rounded-full object-contain border-4 border-gray-200 dark:border-gray-700"
                   />
                   <label className="cursor-pointer">
                     <input

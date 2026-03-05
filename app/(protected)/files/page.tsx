@@ -1,11 +1,10 @@
+import { Suspense } from 'react';
 import { getPathService, getItemsService } from '@/lib/services/auth.service';
-import Breadcrumb from '@/components/Breadcrumb';
-import { FaFolderOpen } from 'react-icons/fa';
-import { HiOutlineFolder } from 'react-icons/hi';
-import FilesPageClient from '@/components/FilesPageClient';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import FilesPageWrapper from './page-wrapper';
+import FilesListClient from '@/components/FilesListClient';
+import FilesItemsSkeleton from '@/components/FilesItemsSkeleton';
 
 interface FilesPageProps {
     searchParams: Promise<{ _p?: string }>;
@@ -34,6 +33,18 @@ export async function generateMetadata({ searchParams }: FilesPageProps): Promis
     };
 }
 
+async function ItemsFetcher({ slug }: { slug?: string }) {
+    const itemsResponse = await getItemsService(slug);
+
+    if ((itemsResponse as any).isUnauthenticated) {
+        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
+        redirect('/api/auto-logout?error=session_expired&redirect=/files');
+    }
+
+    const items = itemsResponse.success ? itemsResponse.data : [];
+    return <FilesListClient items={items} />;
+}
+
 export default async function FilesPage({ searchParams }: FilesPageProps) {
     const params = await searchParams;
     const slug = params._p;
@@ -49,22 +60,14 @@ export default async function FilesPage({ searchParams }: FilesPageProps) {
 
     const pathData = pathResponse.success ? pathResponse.data : { paths: [], current: '' };
 
-    // Fetch items (files and folders)
-    const itemsResponse = await getItemsService(slug);
-
-    // Check if token is invalid/expired (Unauthenticated error)
-    if ((itemsResponse as any).isUnauthenticated) {
-        console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
-        redirect('/api/auto-logout?error=session_expired&redirect=/files');
-    }
-
-    const items = itemsResponse.success ? itemsResponse.data : [];
-
     return (
         <FilesPageWrapper
             pathData={pathData}
-            items={items}
             currentPath={slug}
-        />
+        >
+            <Suspense key={slug ?? 'root'} fallback={<FilesItemsSkeleton />}>
+                <ItemsFetcher slug={slug} />
+            </Suspense>
+        </FilesPageWrapper>
     );
 }

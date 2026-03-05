@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import Alert from '@/components/ui/Alert';
 import { loginAction } from '@/app/actions/auth.actions';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
@@ -306,12 +306,14 @@ function LoginPageContent() {
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-6 gap-8">
-            <img
-              src="/logo-oi.webp"
-              alt="Logo OI"
-              className="h-24 w-auto drop-shadow-2xl"
-            />
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 justify-center">
+              <img
+                src="/logo-oi.webp"
+                alt="Logo OI"
+                className="h-24 w-auto drop-shadow-2xl"
+              />
+            </Link>
+            <Link href="/" className="flex items-center gap-2">
               <img
                 src="/favicon.png"
                 alt="Logo Drive"
@@ -322,7 +324,7 @@ function LoginPageContent() {
                 alt="Logo Drive"
                 className="h-16 w-auto drop-shadow-2xl"
               />
-            </div>
+            </Link>
           </div>
           {/* <h1 className="text-4xl font-bold text-white mb-3 drop-shadow-lg">
             Selamat Datang Kembali

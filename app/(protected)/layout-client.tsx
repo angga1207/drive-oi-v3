@@ -60,9 +60,11 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
 
   // Mobile navigation - only show most important items
   const mobileNavigation = [
-    { name: 'Home', href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
-    { name: 'Files', href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
+    { name: t.nav.dashboard, href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
+    { name: t.nav.files, href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
     { name: t.nav.favorite, href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
+    // Conditional menu for admin (user ID 1 or 4)
+    ...(user && (user.id === 1 || user.id === 4) ? [{ name: t.nav.users, href: '/users', icon: <HiUsers className="w-5 h-5" /> }] : []),
     { name: t.nav.profile, href: '/profile', icon: <HiUser className="w-5 h-5" /> },
   ];
 
@@ -77,7 +79,7 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
         <aside className="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden lg:flex lg:flex-col">
           {/* Logo */}
           <div className="flex items-center justify-between gap-3 px-6 py-5 border-b border-gray-200 dark:border-gray-700 select-none">
-            <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
               <img
                 src="/favicon.png"
                 alt="Logo Drive"
@@ -88,7 +90,7 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
                 alt="Logo Drive"
                 className="h-8 w-auto drop-shadow-2xl"
               />
-            </div>
+            </Link>
             <LanguageSwitcher iconOnly />
           </div>
 
@@ -134,7 +136,7 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
                     }}
                     alt={user.name.fullname}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     unoptimized
                   />
                 </div>
@@ -232,10 +234,12 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
         />
 
         {/* Version Info - Desktop Sidebar */}
-        <div className="hidden lg:block fixed bottom-4 right-4 z-10 select-none">
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="hidden lg:block fixed bottom-4 right-4 z-10 select-none px-4 py-3 rounded-lg text-center">
+          <div className="absolute inset-0 bg-[url('/favicon.png')] bg-contain bg-no-repeat bg-center grayscale opacity-15"></div>
+          <div className="relative text-xs text-gray-500 dark:text-gray-400">
             <p className="font-medium">{getAppVersion().name}</p>
             <p>Version {getAppVersion().version}</p>
+            <p className='text-[10px]'>{new Date(getAppVersion().lastUpdate).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
           </div>
         </div>
       </div>
