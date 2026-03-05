@@ -7,9 +7,11 @@ import { google } from 'googleapis';
  */
 export async function GET(request: NextRequest) {
   try {
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+    const redirectUri = `${appUrl}/api/auth/google/callback`;
     console.log('🔐 Google OAuth: Starting authentication');
     console.log('🌐 NEXT_PUBLIC_APP_URL:', process.env.NEXT_PUBLIC_APP_URL);
+    console.log('🌐 Using App URL:', appUrl);
     console.log('🔗 Redirect URI:', redirectUri);
 
     const oauth2Client = new google.auth.OAuth2(

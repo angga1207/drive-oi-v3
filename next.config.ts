@@ -15,7 +15,25 @@ const nextConfig: NextConfig = {
         port: '8000',
         pathname: '/storage/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'drive-backend.oganilirkab.go.id',
+        pathname: '/storage/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
     ],
+  },
+  // Server-side configuration for external API calls
+  serverExternalPackages: [],
+  experimental: {
+    // Allow server actions to run longer for API calls
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
   },
 };
 

@@ -82,23 +82,16 @@ class ApiClient {
                     ...fetchOptions.headers,
                 },
                 signal: controller.signal,
+                // @ts-ignore - Next.js extended fetch options
+                cache: 'no-store',
             });
 
             clearTimeout(timeoutId);
 
-            //   console.log('✅ Response received!');
-            //   console.log('📊 Status:', response.status, response.statusText);
-            //   console.log('⏬ Parsing JSON response...');
-
             // Parse response
             const data = await response.json();
 
-            //   console.log('📦 Response data:', JSON.stringify(data, null, 2));
-            //   console.log('🚀 ========== API CLIENT REQUEST END ==========\n');
-
             if (!response.ok) {
-                // console.error('❌ Response not OK:', response.status);
-                
                 // Check if error is "Unauthenticated" - token invalid/expired
                 if (response.status === 401 || data.message === 'Unauthenticated.' || data.message === 'Unauthenticated') {
                     console.error('❌ Token invalid or expired - Unauthenticated');
@@ -106,7 +99,7 @@ class ApiClient {
                         status: 401,
                         message: 'Unauthenticated.',
                         errors: data.errors || {},
-                        isUnauthenticated: true, // Flag for client to handle logout
+                        isUnauthenticated: true,
                     };
                 }
                 
@@ -121,13 +114,25 @@ class ApiClient {
         } catch (error: any) {
             clearTimeout(timeoutId);
 
-            //   console.error('❌ Fetch error:', error);
-            //   console.log('🚀 ========== API CLIENT REQUEST END (ERROR) ==========\n');
-
             if (error.name === 'AbortError') {
                 throw {
                     status: 408,
                     message: 'Request timeout',
+                    errors: {},
+                };
+            }
+
+            // Enhanced error logging for server-side fetch failures
+            if (error.message === 'fetch failed' || error.cause) {
+                const cause = error.cause?.message || error.cause?.code || 'unknown';
+                console.error(`❌ Fetch failed to ${url}`);
+                console.error(`   Cause: ${cause}`);
+                console.error(`   API_BASE_URL: ${this.baseURL}`);
+                console.error(`   NODE_TLS_REJECT_UNAUTHORIZED: ${process.env.NODE_TLS_REJECT_UNAUTHORIZED}`);
+                
+                throw {
+                    status: 0,
+                    message: `Tidak dapat terhubung ke server backend (${cause}). Pastikan backend API dapat diakses dari server.`,
                     errors: {},
                 };
             }
@@ -236,6 +241,8 @@ class ApiClient {
                 headers,
                 body: formData,
                 signal: controller.signal,
+                // @ts-ignore - Next.js extended fetch options
+                cache: 'no-store',
             });
 
             clearTimeout(timeoutId);
@@ -258,6 +265,19 @@ class ApiClient {
                 throw {
                     status: 408,
                     message: 'Upload timeout',
+                    errors: {},
+                };
+            }
+
+            // Enhanced error logging for upload fetch failures
+            if (error.message === 'fetch failed' || error.cause) {
+                const cause = error.cause?.message || error.cause?.code || 'unknown';
+                console.error(`❌ Upload fetch failed to ${url}`);
+                console.error(`   Cause: ${cause}`);
+                
+                throw {
+                    status: 0,
+                    message: `Tidak dapat terhubung ke server backend untuk upload (${cause}).`,
                     errors: {},
                 };
             }

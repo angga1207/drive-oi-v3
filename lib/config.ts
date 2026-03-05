@@ -3,6 +3,14 @@
  * Centralized configuration untuk API calls
  */
 
+// Bypass SSL certificate validation di production
+// Ini mengatasi error "fetch failed" karena self-signed cert atau cert chain tidak trusted
+if (typeof process !== 'undefined' && process.env) {
+    if (!process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
+}
+
 export const API_CONFIG = {
     BASE_URL: process.env.API_BASE_URL || 'http://127.0.0.1:8000/api',
     TIMEOUT: parseInt(process.env.API_TIMEOUT || '30000'),

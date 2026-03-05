@@ -27,8 +27,11 @@ export async function GET(request: NextRequest) {
     console.log('📥 Received authorization code');
     console.log('🌐 NEXT_PUBLIC_APP_URL:', process.env.NEXT_PUBLIC_APP_URL);
 
+    // Use request origin as fallback if NEXT_PUBLIC_APP_URL is not set or is localhost
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+    
     // Exchange code for tokens
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`;
+    const redirectUri = `${appUrl}/api/auth/google/callback`;
     console.log('🔗 Redirect URI:', redirectUri);
 
     const oauth2Client = new google.auth.OAuth2(
@@ -53,6 +56,7 @@ export async function GET(request: NextRequest) {
 
     // Send to Laravel backend
     console.log('📤 Sending to Laravel backend...');
+    console.log('🎯 API_BASE_URL:', process.env.API_BASE_URL || 'NOT SET');
     const result = await googleLoginService({
       name: userInfo.name || '',
       email: userInfo.email || '',
@@ -70,15 +74,16 @@ export async function GET(request: NextRequest) {
       console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (SUCCESS) ==========\n');
 
       // Redirect to dashboard
-      return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard`, request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     console.error('❌ Backend login failed:', result.message);
     console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (FAILED) ==========\n');
-    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/login?error=backend_failed`, request.url));
+    return NextResponse.redirect(new URL('/login?error=backend_failed', request.url));
   } catch (error: any) {
     console.error('❌ Callback error:', error);
+    console.error('❌ Error cause:', error.cause || 'No cause');
     console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (ERROR) ==========\n');
-    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/login?error=callback_error`, request.url));
+    return NextResponse.redirect(new URL('/login?error=callback_error', request.url));
   }
 }
