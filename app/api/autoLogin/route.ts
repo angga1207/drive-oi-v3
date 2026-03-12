@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { API_CONFIG } from '@/lib/config';
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Hit Laravel backend auto-login endpoint
-        const response = await fetch(`${process.env.API_BASE_URL}/auto-login`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/auto-login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

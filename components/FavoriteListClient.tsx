@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { FaFolder, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFileArchive, FaFileCode, FaFile, FaStar, FaSpinner, FaCheckSquare, FaDownload, FaGlobe, FaCalendarAlt, FaTrash, FaShareAltSquare } from 'react-icons/fa';
 import { HiX } from 'react-icons/hi';
 import FileActionMenu from '@/components/FileActionMenu';
@@ -50,6 +50,14 @@ export default function FavoriteListClient() {
     const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
     const [anchorIndex, setAnchorIndex] = useState<number | null>(null);
 
+    // Infinite scroll state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const sentinelRef = useRef<HTMLDivElement>(null);
+    const isLoadingMoreRef = useRef(false);
+
     // Fetch favorite items
     useEffect(() => {
         fetchFavoriteItems();
@@ -75,11 +83,14 @@ export default function FavoriteListClient() {
     const fetchFavoriteItems = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('/api/favorite');
+            const response = await fetch('/api/v2/favorite?page=1&per_page=25');
             const data = await response.json();
 
-            if (data.status === 'success') {
-                setItems(data.data || []);
+            if (data.status === 'success' && data.data) {
+                setItems(data.data.data || []);
+                setCurrentPage(data.data.current_page ?? 1);
+                setLastPage(data.data.last_page ?? 1);
+                setTotalItems(data.data.total ?? 0);
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -96,8 +107,55 @@ export default function FavoriteListClient() {
             });
         } finally {
             setIsLoading(false);
+            isLoadingMoreRef.current = false;
         }
     };
+
+    // Load more function
+    const loadMore = useCallback(async () => {
+        if (isLoadingMoreRef.current || currentPage >= lastPage) return;
+        isLoadingMoreRef.current = true;
+        setIsLoadingMore(true);
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        try {
+            const nextPage = currentPage + 1;
+            const response = await fetch(`/api/v2/favorite?page=${nextPage}&per_page=25`);
+            const data = await response.json();
+
+            if (data.status === 'success' && data.data?.data) {
+                setItems(prev => [...prev, ...data.data.data]);
+                setCurrentPage(data.data.current_page);
+                setLastPage(data.data.last_page);
+                setTotalItems(data.data.total);
+            }
+        } catch (error) {
+            console.error('Error loading more favorites:', error);
+        } finally {
+            isLoadingMoreRef.current = false;
+            setIsLoadingMore(false);
+        }
+    }, [currentPage, lastPage]);
+
+    // Intersection Observer for infinite scroll
+    useEffect(() => {
+        if (currentPage >= lastPage) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
+                    loadMore();
+                }
+            },
+            { rootMargin: '200px' }
+        );
+
+        const sentinel = sentinelRef.current;
+        if (sentinel) observer.observe(sentinel);
+
+        return () => observer.disconnect();
+    }, [currentPage, lastPage, loadMore]);
 
     const handleDoubleClick = (item: any) => {
         if (isSelectionMode) return;
@@ -591,6 +649,31 @@ export default function FavoriteListClient() {
                             )}
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Infinite Scroll Sentinel */}
+            {items.length > 0 && currentPage < lastPage && (
+                <div ref={sentinelRef} className="flex flex-col items-center py-8">
+                    {isLoadingMore && (
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="flex gap-1.5">
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#003a69] dark:bg-[#ebbd18] animate-bounce [animation-delay:0ms]"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#003a69] dark:bg-[#ebbd18] animate-bounce [animation-delay:150ms]"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#003a69] dark:bg-[#ebbd18] animate-bounce [animation-delay:300ms]"></div>
+                            </div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Memuat lebih banyak...</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Items count info */}
+            {items.length > 0 && currentPage >= lastPage && totalItems > 0 && (
+                <div className="text-center py-4">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                        Menampilkan {items.length} dari {totalItems} item
+                    </p>
                 </div>
             )}
 

@@ -74,6 +74,143 @@ export async function getItemsService(slug?: string): Promise<ApiResponse<any>> 
 }
 
 /**
+ * Get items v2 (paginated)
+ */
+export async function getItemsServiceV2(slug?: string, page: number = 1, perPage: number = 25): Promise<ApiResponse<any>> {
+    try {
+        const token = await getToken();
+
+        if (!token) {
+            return {
+                success: false,
+                message: 'No authentication token found',
+            };
+        }
+
+        const params = new URLSearchParams({
+            page: String(page),
+            per_page: String(perPage),
+        });
+        if (slug) params.set('slug', slug);
+
+        const response = await apiClient.get<any>(
+            `/v2/getItems?${params}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return {
+                success: true,
+                data: {
+                    items: response.data.data || [],
+                    pagination: {
+                        current_page: response.data.current_page,
+                        last_page: response.data.last_page,
+                        per_page: response.data.per_page,
+                        total: response.data.total,
+                    }
+                },
+                message: response.message,
+            };
+        }
+
+        return {
+            success: false,
+            message: response.message || 'Failed to get items',
+        };
+    } catch (error: any) {
+        console.error('❌ Get items v2 error:', error.message);
+
+        if (error.status === 401 || error.isUnauthenticated || error.message === 'Unauthenticated.' || error.message === 'Unauthenticated') {
+            return {
+                success: false,
+                message: 'Unauthenticated.',
+                isUnauthenticated: true,
+            };
+        }
+
+        return {
+            success: false,
+            message: error.message || 'Failed to get items',
+        };
+    }
+}
+
+/**
+ * Get shared folders v2 (paginated)
+ */
+export async function getSharedFoldersServiceV2(slug?: string, page: number = 1, perPage: number = 25): Promise<ApiResponse<any>> {
+    try {
+        const token = await getToken();
+
+        if (!token) {
+            return {
+                success: false,
+                message: 'No authentication token found',
+            };
+        }
+
+        const params = new URLSearchParams({
+            page: String(page),
+            per_page: String(perPage),
+        });
+
+        const endpoint = slug
+            ? `/v2/getItemsSharer?slug=${slug}&${params}`
+            : `/v2/getSharedFolders?${params}`;
+
+        const response = await apiClient.get<any>(
+            endpoint,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return {
+                success: true,
+                data: {
+                    items: response.data.data || [],
+                    pagination: {
+                        current_page: response.data.current_page,
+                        last_page: response.data.last_page,
+                        per_page: response.data.per_page,
+                        total: response.data.total,
+                    }
+                },
+                message: response.message,
+            };
+        }
+
+        return {
+            success: false,
+            message: response.message || 'Failed to get shared items',
+        };
+    } catch (error: any) {
+        console.error('❌ Get shared v2 error:', error.message);
+
+        if (error.status === 401 || error.isUnauthenticated || error.message === 'Unauthenticated.' || error.message === 'Unauthenticated') {
+            return {
+                success: false,
+                message: 'Unauthenticated.',
+                isUnauthenticated: true,
+            };
+        }
+
+        return {
+            success: false,
+            message: error.message || 'Failed to get shared items',
+        };
+    }
+}
+
+/**
  * Get path breadcrumb
  */
 export async function getPathService(slug?: string): Promise<ApiResponse<any>> {

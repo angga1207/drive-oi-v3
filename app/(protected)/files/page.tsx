@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getPathService, getItemsService } from '@/lib/services/auth.service';
+import { getPathService, getItemsServiceV2 } from '@/lib/services/auth.service';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import FilesPageWrapper from './page-wrapper';
@@ -34,15 +34,24 @@ export async function generateMetadata({ searchParams }: FilesPageProps): Promis
 }
 
 async function ItemsFetcher({ slug }: { slug?: string }) {
-    const itemsResponse = await getItemsService(slug);
+    const itemsResponse = await getItemsServiceV2(slug);
 
     if ((itemsResponse as any).isUnauthenticated) {
         console.error('🔐 Token invalid/expired - Redirecting to auto-logout');
         redirect('/api/auto-logout?error=session_expired&redirect=/files');
     }
 
-    const items = itemsResponse.success ? itemsResponse.data : [];
-    return <FilesListClient items={items} />;
+    const data = itemsResponse.success
+        ? itemsResponse.data
+        : { items: [], pagination: null };
+
+    return (
+        <FilesListClient
+            initialItems={data.items}
+            slug={slug}
+            pagination={data.pagination}
+        />
+    );
 }
 
 export default async function FilesPage({ searchParams }: FilesPageProps) {

@@ -6,6 +6,7 @@ import SharedItemsSkeleton from '@/components/SharedItemsSkeleton';
 import Breadcrumb from '@/components/Breadcrumb';
 import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/session';
+import { getSharedFoldersServiceV2 } from '@/lib/services/auth.service';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -80,56 +81,9 @@ async function getSharedPath(slug?: string) {
     }
 }
 
-async function getSharedFolders(slug?: string) {
-    try {
-        const cookieStore = await cookies();
-        const sessionCookie = cookieStore.get('drive_session');
-
-        if (!sessionCookie) {
-            return { items: [] };
-        }
-
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-        // If slug provided, get items from that specific shared folder
-        // For now, just get root shared folders
-        const endpoint = slug
-            ? `/api/sharer/${slug}`
-            : '/api/shared';
-
-        const response = await fetch(`${baseUrl}${endpoint}`, {
-            headers: {
-                Cookie: `drive_session=${sessionCookie.value}`,
-            },
-            cache: 'no-store',
-        });
-
-        if (!response.ok) {
-            console.error('Failed to fetch shared folders:', response.status);
-
-            // Check if Unauthenticated error
-            if (response.status === 401) {
-                const data = await response.json();
-                if (data.message === 'Unauthenticated.' || data.message === 'Unauthenticated') {
-                    return { items: [], isUnauthenticated: true };
-                }
-            }
-
-            return { items: [] };
-        }
-
-        const data = await response.json();
-
-        return { items: data.data || [] };
-    } catch (error) {
-        console.error('Error fetching shared folders:', error);
-        return { items: [] };
-    }
-}
-
 async function SharedItemsFetcher({ slug }: { slug?: string }) {
     const [foldersData, currentUser] = await Promise.all([
-        getSharedFolders(slug),
+        getSharedFoldersServiceV2(slug),
         getCurrentUser(),
     ]);
 
@@ -138,9 +92,15 @@ async function SharedItemsFetcher({ slug }: { slug?: string }) {
         redirect('/api/auto-logout?error=session_expired&redirect=/shared');
     }
 
+    const data = foldersData.success
+        ? foldersData.data
+        : { items: [], pagination: null };
+
     return (
         <SharedListClient
-            items={foldersData.items}
+            initialItems={data.items}
+            slug={slug}
+            pagination={data.pagination}
             currentUserId={currentUser?.id}
         />
     );

@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     // Use request origin as fallback if NEXT_PUBLIC_APP_URL is not set or is localhost
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
-    
+
     // Exchange code for tokens
     const redirectUri = `${appUrl}/api/auth/google/callback`;
     console.log('🔗 Redirect URI:', redirectUri);
@@ -74,7 +74,8 @@ export async function GET(request: NextRequest) {
       console.log('🔐 ========== GOOGLE OAUTH CALLBACK END (SUCCESS) ==========\n');
 
       // Redirect to dashboard
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard`, request.url));
+      // return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     console.error('❌ Backend login failed:', result.message);

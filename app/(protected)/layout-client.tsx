@@ -239,7 +239,7 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
           <div className="relative text-xs text-gray-500 dark:text-gray-400">
             <p className="font-medium">{getAppVersion().name}</p>
             <p>Version {getAppVersion().version}</p>
-            <p className='text-[10px]'>{new Date(getAppVersion().lastUpdate).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+            {/* <p className='text-[10px]'>{new Date(getAppVersion().lastUpdate).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p> */}
           </div>
         </div>
       </div>

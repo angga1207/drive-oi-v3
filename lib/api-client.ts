@@ -41,7 +41,7 @@ class ApiClient {
      * Build headers dengan Bearer token jika ada
      */
     private buildHeaders(token?: string): HeadersInit {
-        const headers: HeadersInit = {
+        const headers: Record<string, string> = {
             ...API_CONFIG.HEADERS,
         };
 
@@ -223,7 +223,7 @@ class ApiClient {
         const { token, ...fetchOptions } = options;
         const url = this.buildURL(endpoint);
 
-        const headers: HeadersInit = {
+        const headers: Record<string, string> = {
             'Accept': 'application/json',
         };
 

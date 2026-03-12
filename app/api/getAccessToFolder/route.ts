@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getSession } from '@/lib/session';
+import { API_CONFIG } from '@/lib/config';
 
-const API_BASE_URL = process.env.API_BASE_URL || 'https://drive-backend.oganilirkab.go.id/api';
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 export async function POST(request: Request) {
     try {

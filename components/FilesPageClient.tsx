@@ -55,7 +55,7 @@ export default function FilesPageClient({ items, currentPath }: FilesPageClientP
     <DragDropZone onFilesDropped={handleFilesDropped}>
       <div className="space-y-6">
         {/* Files List */}
-        <FilesListClient items={items} />
+        <FilesListClient initialItems={items} />
 
         {/* Upload Progress Card */}
         <UploadProgressCard

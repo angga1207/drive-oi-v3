@@ -4,7 +4,7 @@ import { API_CONFIG } from '@/lib/config';
 
 /**
  * Get Users List (Admin Only)
- * GET /api/admin/getUsers?per_page=10&order_by=fullname&order_direction=asc&search=...
+ * GET /api/admin/getUsers?per_page=15&order_by=fullname&order_direction=asc&search=...
  */
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     // Get query params
     const searchParams = request.nextUrl.searchParams;
-    const per_page = searchParams.get('per_page') || '10';
+    const per_page = searchParams.get('per_page') || '15';
     const order_by = searchParams.get('order_by') || 'fullname';
     const order_direction = searchParams.get('order_direction') || 'asc';
     const search = searchParams.get('search') || '';

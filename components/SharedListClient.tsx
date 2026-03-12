@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     FaFolder,
@@ -39,8 +39,17 @@ interface SharedItem {
     childs?: number;
 }
 
+interface PaginationInfo {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
 interface SharedListClientProps {
-    items: SharedItem[];
+    initialItems: SharedItem[];
+    slug?: string;
+    pagination?: PaginationInfo | null;
     currentUserId?: number;
 }
 
@@ -58,7 +67,7 @@ function getFileIcon(mime: string = '', extension: string = '') {
     return <FaFile className="text-white" />;
 }
 
-export default function SharedListClient({ items: initialItems, currentUserId }: SharedListClientProps) {
+export default function SharedListClient({ initialItems, slug, pagination: initialPagination, currentUserId }: SharedListClientProps) {
     const router = useRouter();
     const { t } = useLanguage();
     const [items, setItems] = useState<SharedItem[]>(initialItems);
@@ -69,11 +78,25 @@ export default function SharedListClient({ items: initialItems, currentUserId }:
     const [renameItem, setRenameItem] = useState<SharedItem | null>(null);
     const [isRenameOpen, setIsRenameOpen] = useState(false);
 
+    // Infinite scroll state
+    const [currentPage, setCurrentPage] = useState(initialPagination?.current_page ?? 1);
+    const [lastPage, setLastPage] = useState(initialPagination?.last_page ?? 1);
+    const [totalItems, setTotalItems] = useState(initialPagination?.total ?? initialItems.length);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const sentinelRef = useRef<HTMLDivElement>(null);
+    const isLoadingMoreRef = useRef(false);
+
+    // Reset when server data changes
     useEffect(() => {
         setItems(initialItems);
         setFilteredItems(initialItems);
         setSearchQuery('');
-    }, [initialItems]);
+        setCurrentPage(initialPagination?.current_page ?? 1);
+        setLastPage(initialPagination?.last_page ?? 1);
+        setTotalItems(initialPagination?.total ?? initialItems.length);
+        setIsLoadingMore(false);
+        isLoadingMoreRef.current = false;
+    }, [initialItems, initialPagination]);
 
     useEffect(() => {
         if (searchQuery.trim() === '') {
@@ -83,6 +106,61 @@ export default function SharedListClient({ items: initialItems, currentUserId }:
             setFilteredItems(items.filter(item => item.name.toLowerCase().includes(q)));
         }
     }, [searchQuery, items]);
+
+    // Load more function
+    const loadMore = useCallback(async () => {
+        if (isLoadingMoreRef.current || currentPage >= lastPage) return;
+        isLoadingMoreRef.current = true;
+        setIsLoadingMore(true);
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        try {
+            const nextPage = currentPage + 1;
+            const params = new URLSearchParams({
+                page: String(nextPage),
+                per_page: String(initialPagination?.per_page ?? 25),
+            });
+
+            const endpoint = slug
+                ? `/api/v2/sharer/${slug}?${params}`
+                : `/api/v2/shared?${params}`;
+
+            const response = await fetch(endpoint);
+            const data = await response.json();
+
+            if (data.status === 'success' && data.data?.data) {
+                setItems(prev => [...prev, ...data.data.data]);
+                setCurrentPage(data.data.current_page);
+                setLastPage(data.data.last_page);
+                setTotalItems(data.data.total);
+            }
+        } catch (error) {
+            console.error('Error loading more shared items:', error);
+        } finally {
+            isLoadingMoreRef.current = false;
+            setIsLoadingMore(false);
+        }
+    }, [currentPage, lastPage, slug, initialPagination?.per_page]);
+
+    // Intersection Observer for infinite scroll
+    useEffect(() => {
+        if (currentPage >= lastPage) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !isLoadingMoreRef.current) {
+                    loadMore();
+                }
+            },
+            { rootMargin: '200px' }
+        );
+
+        const sentinel = sentinelRef.current;
+        if (sentinel) observer.observe(sentinel);
+
+        return () => observer.disconnect();
+    }, [currentPage, lastPage, loadMore]);
 
     const handleDoubleClick = (item: SharedItem) => {
         if (item.type === 'folder') {
@@ -342,6 +420,31 @@ export default function SharedListClient({ items: initialItems, currentUserId }:
                                 </div>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {/* Infinite Scroll Sentinel */}
+                {items.length > 0 && currentPage < lastPage && (
+                    <div ref={sentinelRef} className="flex flex-col items-center py-8">
+                        {isLoadingMore && (
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="flex gap-1.5">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#003a69] dark:bg-[#ebbd18] animate-bounce [animation-delay:0ms]"></div>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#003a69] dark:bg-[#ebbd18] animate-bounce [animation-delay:150ms]"></div>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-[#003a69] dark:bg-[#ebbd18] animate-bounce [animation-delay:300ms]"></div>
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Memuat lebih banyak...</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Items count info */}
+                {items.length > 0 && currentPage >= lastPage && totalItems > 0 && (
+                    <div className="text-center py-4">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                            Menampilkan {items.length} dari {totalItems} item
+                        </p>
                     </div>
                 )}
             </div>
