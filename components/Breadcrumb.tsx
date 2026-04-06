@@ -20,7 +20,6 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ paths, current, basePath = '/files', homeLabel = 'Beranda', paramLabel = 'p' }: BreadcrumbProps) {
-
   return (
     <nav className="flex items-center space-x-2 text-sm mb-6 max-w-full overflow-x-auto" aria-label="Breadcrumb">
       {/* Home / Root */}

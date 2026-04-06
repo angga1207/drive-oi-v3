@@ -4,9 +4,8 @@ import SharedPageClient from '@/components/SharedPageClient';
 import SharedListClient from '@/components/SharedListClient';
 import SharedItemsSkeleton from '@/components/SharedItemsSkeleton';
 import Breadcrumb from '@/components/Breadcrumb';
-import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/session';
-import { getSharedFoldersServiceV2 } from '@/lib/services/auth.service';
+import { getSharedFoldersServiceV2, getPublicPathService } from '@/lib/services/auth.service';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -41,40 +40,20 @@ async function getSharedPath(slug?: string) {
     }
 
     try {
-        const cookieStore = await cookies();
-        const sessionCookie = cookieStore.get('drive_session');
+        const pathResponse = await getPublicPathService(slug);
 
-        if (!sessionCookie) {
-            return { paths: [], current: null };
+        if ((pathResponse as any).isUnauthenticated) {
+            return { paths: [], current: null, isUnauthenticated: true };
         }
 
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const response = await fetch(`${baseUrl}/api/path?slug=${slug}`, {
-            headers: {
-                Cookie: `drive_session=${sessionCookie.value}`,
-            },
-            cache: 'no-store',
-        });
-
-        if (!response.ok) {
-            console.error('Failed to fetch path:', response.status);
-
-            // Check if Unauthenticated error
-            if (response.status === 401) {
-                const data = await response.json();
-                if (data.message === 'Unauthenticated.' || data.message === 'Unauthenticated') {
-                    return { paths: [], current: null, isUnauthenticated: true };
-                }
-            }
-
-            return { paths: [], current: null };
+        if (pathResponse.success && pathResponse.data) {
+            return {
+                paths: pathResponse.data.paths || [],
+                current: pathResponse.data.current || null,
+            };
         }
 
-        const data = await response.json();
-        return {
-            paths: data.data?.paths || [],
-            current: data.data?.current || null,
-        };
+        return { paths: [], current: null };
     } catch (error) {
         console.error('Error fetching path:', error);
         return { paths: [], current: null };

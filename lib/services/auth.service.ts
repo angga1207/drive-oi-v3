@@ -269,6 +269,43 @@ export async function getPathService(slug?: string): Promise<ApiResponse<any>> {
 }
 
 /**
+ * Get public path breadcrumb (for shared items, no auth required)
+ */
+export async function getPublicPathService(slug?: string): Promise<ApiResponse<any>> {
+    try {
+        if (!slug) {
+            return {
+                success: true,
+                data: { paths: [], current: '' },
+            };
+        }
+
+        const response = await apiClient.get<any>(
+            `/path?slug=${slug}`,
+        );
+
+        if (response.status === 'success' && response.data) {
+            return {
+                success: true,
+                data: response.data,
+                message: response.message,
+            };
+        }
+
+        return {
+            success: false,
+            message: response.message || 'Failed to get public path',
+        };
+    } catch (error: any) {
+        console.error('❌ Get public path error:', error.message);
+        return {
+            success: false,
+            message: error.message || 'Failed to get public path',
+        };
+    }
+}
+
+/**
  * Get current user profile
  */
 export async function getProfileService(): Promise<ApiResponse<any>> {

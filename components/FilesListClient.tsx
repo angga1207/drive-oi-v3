@@ -97,8 +97,7 @@ export default function FilesListClient({ initialItems, slug, pagination: initia
         isLoadingMoreRef.current = true;
         setIsLoadingMore(true);
 
-        // Delay 1.5s for smooth UX
-        await new Promise(resolve => setTimeout(resolve, 1500));
+
 
         try {
             const nextPage = currentPage + 1;

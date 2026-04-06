@@ -117,8 +117,6 @@ export default function FavoriteListClient() {
         isLoadingMoreRef.current = true;
         setIsLoadingMore(true);
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
         try {
             const nextPage = currentPage + 1;
             const response = await fetch(`/api/v2/favorite?page=${nextPage}&per_page=25`);

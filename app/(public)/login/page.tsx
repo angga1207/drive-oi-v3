@@ -87,6 +87,9 @@ function LoginPageContent() {
 
       // Check if all required params are present and key is valid
       if (aoSemesta === 'true' && nip && key === VALID_KEY) {
+        // Add small delay to let proxy clear the session first
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         setIsLoading(true);
         setError('');
 
@@ -97,8 +100,9 @@ function LoginPageContent() {
             // Reset failed attempts on success
             setFailedAttempts(0);
             setShowCaptcha(false);
-            router.push(redirectTo);
-            router.refresh();
+            
+            // Use window.location for cleaner redirect after auto-login
+            window.location.href = redirectTo;
           } else {
             // Increment failed attempts
             setFailedAttempts(prev => prev + 1);
@@ -132,10 +136,28 @@ function LoginPageContent() {
           }
         } catch (err: any) {
           console.error('❌ Auto-login error:', err);
-          setFailedAttempts(prev => prev + 1);
-          setError(err?.message || 'Terjadi kesalahan yang tidak terduga');
-          if (showCaptcha) {
-            generateCaptcha();
+          
+          // Suppress "unexpected response" errors (these are race condition artifacts)
+          const errorMessage = err?.message || '';
+          if (!errorMessage.includes('unexpected response')) {
+            setFailedAttempts(prev => prev + 1);
+            setError(errorMessage || 'Terjadi kesalahan yang tidak terduga');
+            if (showCaptcha) {
+              generateCaptcha();
+            }
+          } else {
+            // Retry once after 300ms if it's a race condition error
+            console.log('⚠️ Detected race condition, retrying...');
+            await new Promise(resolve => setTimeout(resolve, 300));
+            try {
+              const result = await loginAction({ username: nip, password: '#OganIlirBangkit!!' });
+              if (result.success) {
+                window.location.href = redirectTo;
+                return;
+              }
+            } catch {
+              // Ignore retry errors
+            }
           }
         } finally {
           setIsLoading(false);

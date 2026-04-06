@@ -14,7 +14,14 @@ const protectedRoutes = ['/dashboard', '/files', '/shared', '/settings'];
 const authRoutes = ['/login', '/register'];
 
 export default function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+  
+  // Check for auto-login parameters
+  const aoSemesta = searchParams.get('ao-semesta');
+  const nip = searchParams.get('nip');
+  const key = searchParams.get('key');
+  const VALID_AUTO_LOGIN_KEY = '049976129942';
+  const isAutoLoginRequest = aoSemesta === 'true' && nip && key === VALID_AUTO_LOGIN_KEY;
   
   // Check if user has session cookie
   const sessionCookie = request.cookies.get(SESSION_CONFIG.COOKIE_NAME);
@@ -30,6 +37,19 @@ export default function proxy(request: NextRequest) {
     pathname.startsWith(route)
   );
 
+  // Special handling for auto-login: clear session if user is authenticated
+  // This prevents race condition between proxy redirect and Server Action
+  if (isAutoLoginRequest && pathname.startsWith('/login')) {
+    if (isAuthenticated) {
+      // Clear the existing session to allow fresh auto-login
+      const response = NextResponse.next();
+      response.cookies.delete(SESSION_CONFIG.COOKIE_NAME);
+      return response;
+    }
+    // Allow auto-login to proceed even on auth route
+    return NextResponse.next();
+  }
+
   // Redirect to login if accessing protected route without authentication
   if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL('/login', request.url);
@@ -38,6 +58,7 @@ export default function proxy(request: NextRequest) {
   }
 
   // Redirect to dashboard if accessing auth route while authenticated
+  // (but not for auto-login, which is handled above)
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }

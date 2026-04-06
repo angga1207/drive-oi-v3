@@ -1,6 +1,6 @@
 'use client';
 
-import { FaTimes, FaDownload, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFile } from 'react-icons/fa';
+import { FaTimes, FaDownload, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileImage, FaFileVideo, FaFileAudio, FaFile, FaFileArchive } from 'react-icons/fa';
 
 interface FilePreviewModalProps {
     isOpen: boolean;
@@ -17,6 +17,7 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
         if (['doc', 'docx'].includes(extension)) return <FaFileWord className="w-16 h-16 text-blue-600" />;
         if (['xls', 'xlsx'].includes(extension)) return <FaFileExcel className="w-16 h-16 text-green-600" />;
         if (['ppt', 'pptx'].includes(extension)) return <FaFilePowerpoint className="w-16 h-16 text-orange-600" />;
+        if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2'].includes(extension)) return <FaFileArchive className="w-16 h-16 text-yellow-600" />;
         if (mime.startsWith('image')) return <FaFileImage className="w-16 h-16 text-purple-600" />;
         if (mime.startsWith('video')) return <FaFileVideo className="w-16 h-16 text-pink-600" />;
         if (mime.startsWith('audio')) return <FaFileAudio className="w-16 h-16 text-indigo-600" />;
@@ -30,7 +31,9 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
             mime.startsWith('video') ||
             mime.startsWith('audio') ||
             ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension) ||
-            mime.startsWith('text')
+            mime.startsWith('text') ||
+            // Archive files can be previewed when on Google Drive (sv_in === 1)
+            ((item.sv_in === 1) && ['zip', 'rar', '7z', 'tar', 'gz', 'bz2'].includes(extension))
         );
     };
 
@@ -48,7 +51,17 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
             if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(item.extension)) {
                 return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(path)}`;
             }
-            // For other files, use direct path
+            // Proxy local files through Next.js API to avoid cross-origin issues
+            // Extract the /storage/... path from the full backend URL
+            try {
+                const url = new URL(path);
+                const storagePath = url.pathname;
+                if (storagePath.startsWith('/storage/')) {
+                    return `/api/file-proxy?url=${encodeURIComponent(storagePath)}`;
+                }
+            } catch {
+                // path is not a valid URL, use as-is
+            }
             return path;
         }
     };
