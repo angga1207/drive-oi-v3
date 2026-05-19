@@ -192,6 +192,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
 
       const initData = initJson?.data?.data ?? initJson?.data ?? initJson;
       const dataId: number | undefined = initData?.data_id;
+      const serverChunkId: string = initData?.chunk_id || chunkId;
 
       if (!dataId) {
         const message = initJson?.message || 'Chunk init: data_id tidak ditemukan';
@@ -207,7 +208,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          chunk_id: chunkId,
+          chunk_id: serverChunkId,
           data_id: dataId,
         }),
       });
@@ -256,7 +257,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
           uploadQueueRef.current.set(uploadFile.id, xhr);
 
           const formData = new FormData();
-          formData.append('chunk_id', chunkId);
+          formData.append('chunk_id', serverChunkId);
           formData.append('data_id', String(dataId));
           formData.append('chunk_index', String(chunkIndex));
           formData.append('chunk', chunkBlob, `${file.name}.part${chunkIndex}`);
@@ -317,7 +318,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          chunk_id: chunkId,
+          chunk_id: serverChunkId,
           data_id: dataId,
         }),
       });
