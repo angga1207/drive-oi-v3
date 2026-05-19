@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FaTimes, FaLink, FaGlobe, FaLock, FaCopy, FaCheck } from 'react-icons/fa';
 import { HiRefresh } from 'react-icons/hi';
+import { MdInfo } from 'react-icons/md';
 
 interface ShareModalProps {
     isOpen: boolean;
@@ -36,7 +37,7 @@ export default function ShareModal({ isOpen, onClose, item, onShare }: ShareModa
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
     const shareLink = `${baseUrl}/sharer?_id=${item?.slug}`;
-    
+
     const handleCopyLink = async () => {
         try {
             await navigator.clipboard.writeText(shareLink);
@@ -75,12 +76,12 @@ export default function ShareModal({ isOpen, onClose, item, onShare }: ShareModa
     };
 
     return (
-        <div 
+        <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
             onClick={onClose}
         >
-            <div 
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border-2 border-[#ebbd18]/20"
+            <div
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg border-2 border-[#ebbd18]/20"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -181,7 +182,15 @@ export default function ShareModal({ isOpen, onClose, item, onShare }: ShareModa
                     {shareType === 'public' && (
                         <>
                             <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Dapat diedit</span>
+                                <div>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Dapat diedit</span>
+                                    <div className='text-[10px] text-[#003a69] flex items-center gap-x-1'>
+                                        <MdInfo />
+                                        <span>
+                                            Pengguna lain dapat melakukan perubahan di dalam folder / file.
+                                        </span>
+                                    </div>
+                                </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -195,7 +204,15 @@ export default function ShareModal({ isOpen, onClose, item, onShare }: ShareModa
                             </div>
 
                             <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Selamanya</span>
+                                <div>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Selamanya</span>
+                                    <div className='text-[10px] text-[#003a69] flex items-center gap-x-1'>
+                                        <MdInfo />
+                                        <span>
+                                            Durasi link yang dibagikan
+                                        </span>
+                                    </div>
+                                </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -251,7 +268,7 @@ export default function ShareModal({ isOpen, onClose, item, onShare }: ShareModa
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="flex-1 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#003a69] to-[#005a9c] text-white font-semibold hover:from-[#002347] hover:to-[#003a69] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="flex-1 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#003a69] to-[#005a9c] text-white font-semibold hover:from-[#002347] hover:to-[#003a69] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {isLoading ? (
                                 <>
