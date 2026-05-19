@@ -70,13 +70,22 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
     const previewUrl = getPreviewUrl();
     const svIn = item.sv_in || 2;
 
+    const isGoogleOfficeEditable =
+        svIn === 1 && ['doc', 'docx', 'xls', 'xlsx'].includes(item.extension) && item.path;
+
+    const googleOfficeEditUrl = isGoogleOfficeEditable
+        ? (['xls', 'xlsx'].includes(item.extension)
+            ? `https://docs.google.com/spreadsheets/d/${item.path}/edit`
+            : `https://docs.google.com/document/d/${item.path}/edit`)
+        : '';
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
             onClick={onClose}
         >
             <div
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] overflow-hidden border-2 border-[#ebbd18]/20 flex flex-col"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full h-[95vh] overflow-hidden border-2 border-[#ebbd18]/20 flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -101,6 +110,23 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
                         >
                             <FaDownload className="w-5 h-5 text-[#ebbd18]" />
                         </button>
+
+                        {/* Edit Google (open new tab) */}
+                        {svIn === 1 && isGoogleOfficeEditable && (
+                            <a
+                                href={googleOfficeEditUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-2.5 hover:bg-[#003a69]/10 dark:hover:bg-[#003a69]/20 rounded-lg transition-colors"
+                                title="Edit dengan Google"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <span className="inline-flex items-center justify-center w-5 h-5 font-bold text-[#003a69] dark:text-[#ebbd18]">
+                                    ✎
+                                </span>
+                            </a>
+                        )}
+
                         <button
                             onClick={onClose}
                             className="p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -115,13 +141,22 @@ export default function FilePreviewModal({ isOpen, onClose, item, onDownload }: 
                     {isPreviewable ? (
                         <div className="flex items-center justify-center h-full">
                             {/* Google Drive embed mode (sv_in === 1) */}
-                            {svIn === 1 && (
+                            {svIn === 1 && isGoogleOfficeEditable ? (
                                 <iframe
-                                    src={previewUrl}
+                                    src={googleOfficeEditUrl}
                                     className="w-full h-full min-h-[500px] rounded-lg border-2 border-gray-200 dark:border-gray-700"
                                     title={item.name}
                                     allow="autoplay"
                                 />
+                            ) : (
+                                svIn === 1 && (
+                                    <iframe
+                                        src={previewUrl}
+                                        className="w-full h-full min-h-[500px] rounded-lg border-2 border-gray-200 dark:border-gray-700"
+                                        title={item.name}
+                                        allow="autoplay"
+                                    />
+                                )
                             )}
 
                             {/* Direct preview mode (sv_in === 2) */}
