@@ -215,6 +215,14 @@ export function UploadProvider({ children }: { children: ReactNode }) {
       const preflightJson = await preflightRes.json().catch(() => ({}));
       const preflightPayload = preflightJson?.data?.data ?? preflightJson?.data ?? preflightJson;
 
+      if (preflightPayload?.status === 'error') {
+        const message = preflightPayload?.message || 'Chunk preflight failed';
+        setUploadFiles((prev) =>
+          prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error', error: message } : f))
+        );
+        throw new Error(message);
+      }
+
       const missingChunks: number[] = Array.isArray(preflightPayload?.missing_chunks)
         ? preflightPayload.missing_chunks
         : [];
@@ -318,6 +326,14 @@ export function UploadProvider({ children }: { children: ReactNode }) {
       const finalPayload = finalJson?.data?.data ?? finalJson?.data ?? finalJson;
 
       const finalMissing: number[] = Array.isArray(finalPayload?.missing_chunks) ? finalPayload.missing_chunks : [];
+
+      if (finalPayload?.status === 'error') {
+        const message = finalPayload?.message || 'Chunk complete failed';
+        setUploadFiles((prev) =>
+          prev.map((f) => (f.id === uploadFile.id ? { ...f, status: 'error', error: message } : f))
+        );
+        throw new Error(message);
+      }
 
       if (!finalRes.ok || finalMissing.length > 0) {
         const message =
