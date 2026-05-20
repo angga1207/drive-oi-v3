@@ -3,7 +3,7 @@
  * Update version here for all pages
  */
 
-export const APP_VERSION = '3.3.2';
+export const APP_VERSION = '3.4.1';
 export const APP_NAME = 'Drive Ogan Ilir';
 export const APP_BUILD_DATE = '2026-01-19';
 export const APP_LAST_UPDATE = '2026-03-05';

@@ -13,7 +13,6 @@ import { HiOutlineFolder } from 'react-icons/hi';
 import FilePreviewModal from './modals/FilePreviewModal';
 import RenameModal from './modals/RenameModal';
 import Swal from 'sweetalert2';
-import Tippy from '@tippyjs/react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SharedItem {
@@ -359,60 +358,58 @@ export default function SharedListClient({ initialItems, slug, pagination: initi
                                 {/* Actions — always-visible author avatar + hover actions */}
                                 <div className="flex items-center gap-1 shrink-0">
 
-                                    {/* Hover-reveal action buttons */}
+                                    {/* Hover-reveal action buttons (native title tooltips to avoid React 19 element.ref issue) */}
                                     <div className="flex items-center gap-1 opacity-0s group-hover:opacity-100s transition-opacity">
-                                        <Tippy content={item.author.fullname} placement="top" arrow delay={100}>
-                                            <button className="p-1.5 rounded-lg hover:bg-[#003a69]/10 transition-colors cursor-pointer">
-                                                <img
-                                                    src={item.author.photo}
-                                                    onError={(e) => { e.currentTarget.src = '/favicon.png'; }}
-                                                    alt={item.author.fullname}
-                                                    className="w-5 h-5 rounded-full object-cover"
-                                                />
-                                            </button>
-                                        </Tippy>
+                                        <button
+                                            className="p-1.5 rounded-lg hover:bg-[#003a69]/10 transition-colors cursor-pointer"
+                                            title={item.author.fullname}
+                                        >
+                                            <img
+                                                src={item.author.photo}
+                                                onError={(e) => { e.currentTarget.src = '/favicon.png'; }}
+                                                alt={item.author.fullname}
+                                                className="w-5 h-5 rounded-full object-cover"
+                                            />
+                                        </button>
+
                                         {item.type === 'file' && (
-                                            <Tippy content="Lihat" placement="top" arrow delay={100}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handlePreview(item); }}
-                                                    className="p-2 hover:bg-[#003a69]/10 rounded-lg transition-colors cursor-pointer"
-                                                >
-                                                    <FaEye className="w-4 h-4 text-[#003a69] dark:text-[#ebbd18]" />
-                                                </button>
-                                            </Tippy>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handlePreview(item); }}
+                                                className="p-2 hover:bg-[#003a69]/10 rounded-lg transition-colors cursor-pointer"
+                                                title="Lihat"
+                                            >
+                                                <FaEye className="w-4 h-4 text-[#003a69] dark:text-[#ebbd18]" />
+                                            </button>
                                         )}
 
                                         {item.publicity.editable && (
-                                            <Tippy content="Ganti Nama" placement="top" arrow delay={100}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleRename(item); }}
-                                                    className="p-2 hover:bg-[#003a69]/10 rounded-lg transition-colors cursor-pointer"
-                                                >
-                                                    <FaEdit className="w-4 h-4 text-[#003a69] dark:text-[#ebbd18]" />
-                                                </button>
-                                            </Tippy>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleRename(item); }}
+                                                className="p-2 hover:bg-[#003a69]/10 rounded-lg transition-colors cursor-pointer"
+                                                title="Ganti Nama"
+                                            >
+                                                <FaEdit className="w-4 h-4 text-[#003a69] dark:text-[#ebbd18]" />
+                                            </button>
                                         )}
 
                                         {item.type === 'file' && (
-                                            <Tippy content="Unduh" placement="top" arrow delay={100}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
-                                                    className="p-2 hover:bg-[#003a69]/10 rounded-lg transition-colors cursor-pointer"
-                                                >
-                                                    <FaDownload className="w-4 h-4 text-[#003a69] dark:text-[#ebbd18]" />
-                                                </button>
-                                            </Tippy>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDownload(item); }}
+                                                className="p-2 hover:bg-[#003a69]/10 rounded-lg transition-colors cursor-pointer"
+                                                title="Unduh"
+                                            >
+                                                <FaDownload className="w-4 h-4 text-[#003a69] dark:text-[#ebbd18]" />
+                                            </button>
                                         )}
 
                                         {currentUserId && item.author.id === currentUserId && (
-                                            <Tippy content="Hapus" placement="top" arrow delay={100}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
-                                                    className="p-2 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
-                                                >
-                                                    <FaTrash className="w-4 h-4 text-red-500 dark:text-red-400" />
-                                                </button>
-                                            </Tippy>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(item); }}
+                                                className="p-2 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                                                title="Hapus"
+                                            >
+                                                <FaTrash className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                            </button>
                                         )}
                                     </div>
                                 </div>

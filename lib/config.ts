@@ -73,7 +73,7 @@ if (typeof globalThis !== 'undefined' && _originalBackendHost && API_CONFIG.BASE
     const _internalBaseUrl = API_CONFIG.BASE_URL;
     const _hostHeader = _originalBackendHost;
 
-    globalThis.fetch = function patchedFetch(
+    globalThis.fetch = async function patchedFetch(
         input: RequestInfo | URL,
         init?: RequestInit
     ): Promise<Response> {
@@ -89,12 +89,31 @@ if (typeof globalThis !== 'undefined' && _originalBackendHost && API_CONFIG.BASE
             return _originalFetch(input, init);
         }
 
-        // Hanya inject Host header untuk request ke backend internal
+        // Hanya inject Host/User-Agent header untuk request ke backend internal
         if (url.startsWith(_internalBaseUrl)) {
             const headers = new Headers(init?.headers);
+
+            // Inject Host header jika belum ada (untuk routing nginx)
             if (!headers.has('Host')) {
                 headers.set('Host', _hostHeader);
             }
+
+            // Inject User-Agent asli dari request browser yang memanggil Next
+            // (sehingga backend Laravel tidak lagi melihat "node"/undici)
+            if (!headers.has('User-Agent')) {
+                try {
+                    const mod = await import('next/headers');
+                    const h = await mod.headers();
+                    const ua = h.get('user-agent') ?? undefined;
+                    if (ua) {
+                        headers.set('User-Agent', ua);
+                    }
+                } catch {
+                    // fallback: kalau tidak bisa ambil headers (mis. di luar request scope),
+                    // kita tidak inject User-Agent.
+                }
+            }
+
             return _originalFetch(input, { ...init, headers });
         }
 

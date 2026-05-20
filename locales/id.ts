@@ -40,6 +40,7 @@ export const id = {
         profile: 'Profil',
         settings: 'Pengaturan',
         users: 'Pengguna',
+        securityLogin: 'Security Login',
     },
 
     // Dashboard

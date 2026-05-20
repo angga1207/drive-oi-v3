@@ -42,6 +42,7 @@ export const en: TranslationKeys = {
         profile: 'Profile',
         settings: 'Settings',
         users: 'Users',
+        securityLogin: 'Security Login',
     },
 
     // Dashboard

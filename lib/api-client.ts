@@ -1,4 +1,5 @@
 import { API_CONFIG } from './config';
+import { headers as nextHeaders } from 'next/headers';
 
 /**
  * Base API Client untuk komunikasi dengan Laravel Backend
@@ -21,6 +22,22 @@ class ApiClient {
     }
 
     /**
+     * Ambil User-Agent dari request browser user yang sedang memanggil Next.js.
+     * Ini membuat Laravel backend bisa mendeteksi UA asli (bukan "node"/undici).
+     *
+     * Catatan: next/headers hanya bisa diakses dalam request scope.
+     * Jika dipanggil di luar scope, kita fallback tanpa inject.
+     */
+    private async getBrowserUserAgent(): Promise<string | undefined> {
+        try {
+            const h = await nextHeaders();
+            return h.get('user-agent') ?? undefined;
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
      * Build URL dengan query parameters
      */
     private buildURL(endpoint: string, params?: Record<string, string>): string {
@@ -40,10 +57,15 @@ class ApiClient {
     /**
      * Build headers dengan Bearer token jika ada
      */
-    private buildHeaders(token?: string): HeadersInit {
+    private async buildHeaders(token?: string): Promise<HeadersInit> {
         const headers: Record<string, string> = {
             ...API_CONFIG.HEADERS,
         };
+
+        const userAgent = await this.getBrowserUserAgent();
+        if (userAgent) {
+            headers['User-Agent'] = userAgent;
+        }
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
@@ -62,7 +84,7 @@ class ApiClient {
         const { token, params, ...fetchOptions } = options;
 
         const url = this.buildURL(endpoint, params);
-        const headers = this.buildHeaders(token);
+        const headers = await this.buildHeaders(token);
 
         // console.log('\n🚀 ========== API CLIENT REQUEST ==========');
         // console.log('🔗 Full URL:', url);
@@ -226,6 +248,11 @@ class ApiClient {
         const headers: Record<string, string> = {
             'Accept': 'application/json',
         };
+
+        const userAgent = await this.getBrowserUserAgent();
+        if (userAgent) {
+            headers['User-Agent'] = userAgent;
+        }
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;

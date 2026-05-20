@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tippy.js/dist/tippy.css";
 
 @theme {
   --color-primary: #003a69;
@@ -87,19 +88,27 @@
     animation-delay: 4s;
   }
 
-  /* Tippy.js custom styles */
+  /* Tippy.js custom styles (match screenshot: dark bubble) */
   .tippy-box {
-    @apply bg-[#003a69] text-white text-xs font-medium rounded-lg shadow-lg;
+    @apply bg-[#333333] text-white text-xs font-medium rounded-lg shadow-lg;
     padding: 6px 12px;
   }
 
-  .tippy-arrow {
-    @apply text-[#003a69];
+  /* Arrow background/border color must follow bubble color */
+  .tippy-box[data-placement^='top'] > .tippy-arrow::before {
+    border-top-color: #333333 !important;
+  }
+  .tippy-box[data-placement^='bottom'] > .tippy-arrow::before {
+    border-bottom-color: #333333 !important;
+  }
+  .tippy-box[data-placement^='left'] > .tippy-arrow::before {
+    border-left-color: #333333 !important;
+  }
+  .tippy-box[data-placement^='right'] > .tippy-arrow::before {
+    border-right-color: #333333 !important;
   }
 
   .tippy-content {
     padding: 0;
   }
 }
-
-

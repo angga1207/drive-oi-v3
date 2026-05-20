@@ -37,11 +37,11 @@ const inter = localFont({
 
 export const metadata: Metadata = {
   title: "Drive Ogan Ilir",
-  description: "Drive Ogan Ilir hadir sebagai solusi digital yang memudahkan dalam menyimpan dan berbagi file secara daring. Lebih praktis, aman, dan dapat diakses kapan saja.",
+  description:
+    "Drive Ogan Ilir hadir sebagai solusi digital yang memudahkan dalam menyimpan dan berbagi file secara daring. Lebih praktis, aman, dan dapat diakses kapan saja.",
   icons: {
-    icon: '/favicon.png',
+    icon: "/favicon.png",
   },
-
 };
 
 export default function RootLayout({
@@ -52,9 +52,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

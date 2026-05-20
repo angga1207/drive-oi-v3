@@ -11,7 +11,6 @@ import FilePreviewModal from '@/components/modals/FilePreviewModal';
 import MoveFolderModal from '@/components/modals/MoveFolderModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Swal from 'sweetalert2';
-import Tippy from '@tippyjs/react';
 
 interface PaginationInfo {
     current_page: number;
@@ -985,12 +984,18 @@ export default function FilesListClient({ initialItems, slug, pagination: initia
                                         )}
                                         {item.created_at && (
                                             <>
-                                                <Tippy content={new Date(item.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB'} className='block lg:hidden'>
-                                                    <span className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 max-w-[160px] sm:max-w-full truncate'>
-                                                        <FaCalendarAlt className="w-2.5 h-2.5 flex-none" />
-                                                        {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })},  {new Date(item.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
-                                                    </span>
-                                                </Tippy>
+                                                <span
+                                                    className='flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 max-w-[160px] sm:max-w-full truncate'
+                                                    title={
+                                                        new Date(item.created_at).toLocaleString(
+                                                            'id-ID',
+                                                            { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }
+                                                        ) + ' WIB'
+                                                    }
+                                                >
+                                                    <FaCalendarAlt className="w-2.5 h-2.5 flex-none" />
+                                                    {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })},  {new Date(item.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                                                </span>
                                             </>
                                         )}
                                         {item.publicity.status === 'public' && (

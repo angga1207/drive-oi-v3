@@ -7,7 +7,7 @@ import { logoutAction } from '@/app/actions/auth.actions';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { HiHome, HiStar, HiLink, HiTrash, HiLogout, HiFolderOpen, HiUser } from 'react-icons/hi';
-import { HiUsers } from 'react-icons/hi2';
+import { HiUsers, HiShieldExclamation } from 'react-icons/hi2';
 import ThemeToggle from '@/components/ThemeToggle';
 import AddMenu from '@/components/AddMenu';
 import SearchModal from '@/components/SearchModal';
@@ -47,16 +47,21 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const navigation = [
-    { name: t.nav.dashboard, href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
-    { name: t.nav.files, href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
-    { name: t.nav.favorite, href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
-    { name: t.nav.shared, href: '/shared', icon: <HiLink className="w-5 h-5" /> },
-    { name: t.nav.trash, href: '/trash', icon: <HiTrash className="w-5 h-5" /> },
-    // Conditional menu for admin (user ID 1 or 4)
-    ...(user && (user.id === 1 || user.id === 4) ? [{ name: t.nav.users, href: '/users', icon: <HiUsers className="w-5 h-5" /> }] : []),
-    { name: t.nav.profile, href: '/profile', icon: <HiUser className="w-5 h-5" /> },
-  ];
+    const navigation = [
+      { name: t.nav.dashboard, href: '/dashboard', icon: <HiHome className="w-5 h-5" /> },
+      { name: t.nav.files, href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
+      { name: t.nav.favorite, href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
+      { name: t.nav.shared, href: '/shared', icon: <HiLink className="w-5 h-5" /> },
+      { name: t.nav.trash, href: '/trash', icon: <HiTrash className="w-5 h-5" /> },
+      // Conditional menu for admin (user ID 1 or 4)
+      ...(user && (user.id === 1 || user.id === 4)
+        ? [
+            { name: t.nav.users, href: '/users', icon: <HiUsers className="w-5 h-5" /> },
+            { name: t.nav.securityLogin, href: '/security-login', icon: <HiShieldExclamation className="w-5 h-5" /> },
+          ]
+        : []),
+      { name: t.nav.profile, href: '/profile', icon: <HiUser className="w-5 h-5" /> },
+    ];
 
   // Mobile navigation - only show most important items
   const mobileNavigation = [
@@ -64,7 +69,12 @@ export default function ProtectedLayout({ children, user }: ProtectedLayoutProps
     { name: t.nav.files, href: '/files', icon: <HiFolderOpen className="w-5 h-5" /> },
     { name: t.nav.favorite, href: '/favorite', icon: <HiStar className="w-5 h-5" /> },
     // Conditional menu for admin (user ID 1 or 4)
-    ...(user && (user.id === 1 || user.id === 4) ? [{ name: t.nav.users, href: '/users', icon: <HiUsers className="w-5 h-5" /> }] : []),
+    ...(user && (user.id === 1 || user.id === 4)
+      ? [
+          { name: t.nav.users, href: '/users', icon: <HiUsers className="w-5 h-5" /> },
+          { name: t.nav.securityLogin, href: '/security-login', icon: <HiShieldExclamation className="w-5 h-5" /> },
+        ]
+      : []),
     { name: t.nav.profile, href: '/profile', icon: <HiUser className="w-5 h-5" /> },
   ];
 

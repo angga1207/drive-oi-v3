@@ -42,6 +42,7 @@ export const plm: TranslationKeys = {
         profile: 'Profil',
         settings: 'Pengaturan',
         users: 'Pengguno',
+        securityLogin: 'Security Login',
     },
 
     // Dashboard

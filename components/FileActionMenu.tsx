@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { FaUser, FaStar, FaRegStar, FaShareAlt, FaEdit, FaTrash, FaDownload, FaEye, FaCopy } from 'react-icons/fa';
 import { HiDotsVertical } from 'react-icons/hi';
 import Swal from 'sweetalert2';
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
+import Tippy from '@/components/ui/Tippy';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FileActionMenuProps {
@@ -255,18 +254,27 @@ export default function FileActionMenu({
 
     return (
         <>
-            {/* Desktop View: Icon buttons with tooltips */}
+            {/* Desktop View: Icon buttons with Tippy tooltips */}
             <div className="hidden lg:flex items-center gap-1">
                 {actionButtons.map((menuItem: any, index) => (
-                    <Tippy key={index} content={menuItem.label} placement="top">
-                        <div className='h-8'>
+                    <Tippy
+                        key={index}
+                        content={typeof menuItem.label === 'string' ? menuItem.label : String(menuItem.label)}
+                        placement="top"
+                        disabled={false}
+                    >
+                        <div className="h-8">
                             <button
+                                type="button"
+                                aria-disabled={Boolean(menuItem.disabled)}
+                                tabIndex={menuItem.disabled ? -1 : 0}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    if (menuItem.disabled) return;
                                     menuItem.onClick();
                                 }}
-                                className={`p-2 rounded-lg transition-colors cursor-pointer ${menuItem.className?.includes('text-red')
+                                className={`p-2 rounded-lg transition-colors ${menuItem.disabled ? 'cursor-default opacity-60' : 'cursor-pointer'} ${menuItem.className?.includes('text-red')
                                     ? 'hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600'
                                     : 'hover:bg-[#003a69]/10 dark:hover:bg-[#003a69]/20 text-gray-600 dark:text-gray-400'
                                     }`}
